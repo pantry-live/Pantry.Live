@@ -69,6 +69,7 @@ function normalizeRecipe(raw) {
     id: String(raw.id || "") || makeId(),
     title,
     category: String(raw.category || "").trim(),
+    subcategory: String(raw.subcategory || "").trim(),
     ingredients: String(raw.ingredients || ""),
     steps: String(raw.steps || ""),
     // The app always uses two base servings; this keeps old data compatible.
@@ -99,10 +100,22 @@ function normalizeData(raw, detectedLanguage = "en") {
     }
   }
 
+    // Subcategories are stored per category, e.g. { "Dinner": ["Pasta", "Curry"] }.
+  const subcategories = {};
+  const sourceSubcategories = source.subcategories && typeof source.subcategories === "object"
+    ? source.subcategories
+    : {};
+  for (const category of categories) {
+    const names = Array.isArray(sourceSubcategories[category]) ? sourceSubcategories[category] : [];
+    const cleaned = [...new Set(names.map((item) => String(item || "").trim()).filter(Boolean))];
+    if (cleaned.length) subcategories[category] = cleaned;
+  }
+
   return {
     version: DATA_VERSION,
     recipes,
     categories,
+    subcategories,
     settings: {
       language: normalizeLanguage(settingsSource.language || detectedLanguage || "en"),
       languageConfirmed: Boolean(settingsSource.languageConfirmed),
@@ -280,7 +293,7 @@ function touch() {
   scheduleSave(false);
 }
 
-export function addRecipe({ title, category, ingredients, steps }) {
+export function addRecipe({ title, category, subcategory, ingredients, steps }) {
   if (!state) return null;
 
   const cleanTitle = String(title || "").trim();
@@ -291,6 +304,7 @@ export function addRecipe({ title, category, ingredients, steps }) {
     id: makeId(),
     title: cleanTitle,
     category: String(category || "").trim(),
+    subcategory: String(subcategory || "").trim(),
     ingredients: String(ingredients || ""),
     steps: String(steps || ""),
     baseServings: 2,
@@ -315,6 +329,7 @@ export function updateRecipe(id, changes) {
     recipe.title = title;
   }
   if (changes.category !== undefined) recipe.category = String(changes.category || "").trim();
+  if (changes.subcategory !== undefined) recipe.subcategory = String(changes.subcategory || "").trim();
   if (changes.ingredients !== undefined) recipe.ingredients = String(changes.ingredients || "");
   if (changes.steps !== undefined) recipe.steps = String(changes.steps || "");
 
@@ -334,6 +349,25 @@ export function deleteRecipe(id) {
   return true;
 }
 
+/** Swap default category names, and the recipes that use them, to the new language. Custom names are kept. */
+function swapDefaultCategoryNames(fromLanguage, toLanguage) {
+  const from = defaultCategories(fromLanguage);
+  const to = defaultCategories(toLanguage);
+
+  const renames = new Map();
+  from.forEach((name, index) => {
+    if (to[index] && to[index] !== name) renames.set(name, to[index]);
+  });
+  if (!renames.size) return;
+
+  const renamed = state.data.categories.map((category) => renames.get(category) || category);
+  state.data.categories = [...new Set(renamed)];
+
+  state.data.recipes.forEach((recipe) => {
+    if (renames.has(recipe.category)) recipe.category = renames.get(recipe.category);
+  });
+}
+
 export function setLanguage(language) {
   if (!state) return;
 
@@ -345,9 +379,7 @@ export function setLanguage(language) {
     return;
   }
 
-  if (isDefaultCategorySet(state.data.categories)) {
-    state.data.categories = defaultCategories(next);
-  }
+  swapDefaultCategoryNames(previous, next);
 
   state.data.settings.language = next;
   applyLanguage(next);
@@ -403,6 +435,22 @@ export function addCategory(name) {
   return { ok: true, value };
 }
 
+/** Add any default categories (in the current language) that are missing. Existing categories are kept. */
+export function restoreDefaultCategories() {
+  if (!state) return { ok: false, added: 0 };
+
+  const existing = state.data.categories;
+  const missing = defaultCategories().filter((name) => (
+    !existing.some((category) => category.toLowerCase() === name.toLowerCase())
+  ));
+
+  if (!missing.length) return { ok: true, added: 0 };
+
+  state.data.categories = [...existing, ...missing];
+  touch();
+  return { ok: true, added: missing.length };
+}
+
 export function renameCategory(fromName, toName) {
   if (!state) return { ok: false, reason: "missing" };
 
@@ -425,6 +473,11 @@ export function renameCategory(fromName, toName) {
     if (recipe.category === from) recipe.category = to;
   }
 
+    if (state.data.subcategories[from]) {
+    state.data.subcategories[to] = state.data.subcategories[from];
+    delete state.data.subcategories[from];
+  }
+
   touch();
   return { ok: true, value: to };
 }
@@ -443,6 +496,50 @@ export function deleteCategory(name) {
   if (count > 0) return { ok: false, reason: "in_use", count };
 
   state.data.categories = state.data.categories.filter((category) => category !== value);
+  delete state.data.subcategories[value];
+  touch();
+  return { ok: true };
+}
+
+export function getSubcategories(category) {
+  if (!state) return [];
+  return [...(state.data.subcategories[category] || [])];
+}
+
+export function addSubcategory(category, name) {
+  if (!state) return { ok: false, reason: "missing" };
+
+  const parent = String(category || "").trim();
+  const value = String(name || "").trim();
+  if (!state.data.categories.includes(parent)) return { ok: false, reason: "missing" };
+  if (!value) return { ok: false, reason: "empty" };
+
+  const list = state.data.subcategories[parent] || [];
+  if (list.some((item) => item.toLowerCase() === value.toLowerCase())) {
+    return { ok: false, reason: "duplicate" };
+  }
+
+  state.data.subcategories[parent] = [...list, value];
+  touch();
+  return { ok: true, value };
+}
+
+export function deleteSubcategory(category, name) {
+  if (!state) return { ok: false, reason: "missing" };
+
+  const parent = String(category || "").trim();
+  const value = String(name || "").trim();
+  const list = state.data.subcategories[parent] || [];
+  if (!list.includes(value)) return { ok: false, reason: "missing" };
+
+  for (const recipe of state.data.recipes) {
+    if (recipe.category === parent && recipe.subcategory === value) recipe.subcategory = "";
+  }
+
+  const remaining = list.filter((item) => item !== value);
+  if (remaining.length) state.data.subcategories[parent] = remaining;
+  else delete state.data.subcategories[parent];
+
   touch();
   return { ok: true };
 }

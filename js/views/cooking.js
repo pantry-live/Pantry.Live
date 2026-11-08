@@ -31,9 +31,9 @@ function createState() {
     mode: "list",
     query: "",
     category: "all",
+    subcategory: "all",
     recipeId: null,
-    servings: 2,
-    cookingEnabled: false
+    servings: 2
   };
 }
 
@@ -52,6 +52,7 @@ export function render(container, appContext) {
   root.addEventListener("click", handleClick);
   root.addEventListener("input", handleInput);
   root.addEventListener("submit", handleSubmit);
+  root.addEventListener("change",handleChange);
 
   paint();
   return cleanup;
@@ -102,7 +103,6 @@ function showList() {
   setRecipeOpen(false);
   state.mode = "list";
   state.recipeId = null;
-  state.cookingEnabled = false;
   ctx?.setBack(null);
   paint();
 }
@@ -112,7 +112,6 @@ function showDetail(id) {
   state.mode = "detail";
   state.recipeId = id;
   state.servings = 2;
-  state.cookingEnabled = false;
   paint();
 }
 
@@ -149,9 +148,13 @@ function handleClick(event) {
       case "add-first":
         showForm();
         return;
+      case "add-subcategory":
+        openSubcategoryEditor();
+        return;
       case "clear-filters":
         state.query = "";
         state.category = "all";
+        state.subcategory = "all";
         renderList();
         return;
       case "back":
@@ -169,9 +172,6 @@ function handleClick(event) {
       case "increase":
         changeServings(1);
         return;
-      case "toggle-cooking":
-        toggleCookingMode();
-        return;
       case "start-cooking":
         startCooking();
         return;
@@ -185,8 +185,20 @@ function handleClick(event) {
 
   const categoryButton = event.target.closest("[data-category]");
   if (categoryButton && root.contains(categoryButton)) {
-    state.category = categoryButton.dataset.category || "all";
+    const value = categoryButton.dataset.category || "all";
+    state.category = state.category === value ? "all" : value;
+    state.subcategory = "all";
     renderChips();
+    renderSubChips();
+    renderResults();
+    return;
+  }
+
+  const subcategoryButton = event.target.closest("[data-subcategory]");
+  if (subcategoryButton && root.contains(subcategoryButton)) {
+    const value = subcategoryButton.dataset.subcategory || "all";
+    state.subcategory = state.subcategory === value ? "all" : value;
+    renderSubChips();
     renderResults();
     return;
   }
@@ -253,10 +265,14 @@ function renderList() {
     <div class="chips" data-ref="chips" role="group"
       aria-label="${escapeHtml(categoryLabel)}"></div>
 
+    <div class="chips" data-ref="subchips" role="group" hidden
+      aria-label="${escapeHtml(t("cooking.subcategoriesTitle"))}"></div>
+
     <div data-ref="results"></div>
   `;
 
   renderChips();
+  renderSubChips();
   renderResults();
 
   if (categoryAction !== "all") {
@@ -298,6 +314,7 @@ function renderResults() {
   const recipes = store.getRecipes();
   const filtered = recipes.filter((recipe) => (
     (state.category === "all" || recipe.category === state.category)
+    && (state.subcategory === "all" || recipe.subcategory === state.subcategory)
     && matchesSearch(recipe, state.query)
   ));
 
@@ -324,7 +341,7 @@ function renderResults() {
   }
 
   results.innerHTML = `
-    <div class="recipe-list">
+        <div class="recipe-grid">
       ${filtered.map(recipeCard).join("")}
     </div>
   `;
@@ -344,18 +361,15 @@ function emptyState({ iconName, title, text, actionLabel, action }) {
 }
 
 function recipeCard(recipe) {
-  const preview = ingredientPreview(recipe) || t("cooking.noIngredients");
-  const category = recipe.category
-    ? `<span class="badge">${escapeHtml(recipe.category)}</span>`
-    : "";
+  const meta = [recipe.category, recipe.subcategory]
+    .filter(Boolean)
+    .map((value) => escapeHtml(value))
+    .join(" · ");
 
   return `
     <button class="recipe-card" type="button" data-recipe-id="${escapeHtml(recipe.id)}">
-      <span class="recipe-card__top">
-        <span class="recipe-card__title">${escapeHtml(recipe.title)}</span>
-        <span class="recipe-card__meta">${category}</span>
-      </span>
-      <span class="recipe-card__preview">${escapeHtml(preview)}</span>
+      <span class="recipe-card__title">${escapeHtml(recipe.title)}</span>
+      <span class="recipe-card__meta">${meta}</span>
     </button>
   `;
 }
@@ -370,6 +384,96 @@ function clearSearch() {
   const clearButton = root.querySelector('[data-action="clear-search"]');
   if (clearButton) clearButton.hidden = true;
   renderResults();
+}
+
+function renderSubChips() {
+  const row = root.querySelector('[data-ref="subchips"]');
+  if (!row) return;
+
+  if (state.category === "all") {
+    row.hidden = true;
+    row.innerHTML = "";
+    state.subcategory = "all";
+    return;
+  }
+
+  const names = store.getSubcategories(state.category);
+  if (state.subcategory !== "all" && !names.includes(state.subcategory)) {
+    state.subcategory = "all";
+  }
+
+  const items = [
+    { value: "all", label: t("common.all") },
+    ...names.map((name) => ({ value: name, label: name }))
+  ];
+
+  row.hidden = false;
+  row.innerHTML = items.map((item) => {
+    const active = state.subcategory === item.value;
+    return `
+      <button class="chip${active ? " is-active" : ""}" type="button"
+        data-subcategory="${escapeHtml(item.value)}"
+        aria-pressed="${active ? "true" : "false"}">
+        ${escapeHtml(item.label)}
+      </button>
+    `;
+  }).join("") + `
+    <button class="chip" type="button" data-action="add-subcategory">
+      ${icon("plus")}
+      <span>${escapeHtml(t("cooking.addSubcategory"))}</span>
+    </button>
+  `;
+}
+
+function openSubcategoryEditor() {
+  if (state.category === "all") return;
+  const parent = state.category;
+
+  const body = document.createElement("div");
+  body.className = "field";
+  body.innerHTML = `
+    <label class="field__label" for="new-subcategory">
+      ${escapeHtml(t("cooking.subcategoryPlaceholder"))}
+    </label>
+    <input class="input" type="text" id="new-subcategory" autocomplete="off"
+      placeholder="${escapeHtml(t("cooking.subcategoryPlaceholder"))}">
+    <p class="field__hint text-danger" data-ref="subcategory-error" role="alert" hidden></p>
+  `;
+
+  const input = body.querySelector("#new-subcategory");
+  const errorElement = body.querySelector('[data-ref="subcategory-error"]');
+
+  openModal({
+    title: t("cooking.addSubcategory"),
+    body,
+    actions: [
+      { label: t("common.cancel"), variant: "secondary" },
+      {
+        label: t("common.add"),
+        onClick: () => {
+          const result = store.addSubcategory(parent, input.value);
+          if (!result.ok) {
+            errorElement.textContent = result.reason === "empty"
+              ? t("cooking.subcategoryEmpty")
+              : result.reason === "duplicate"
+                ? t("cooking.subcategoryDuplicate")
+                : t("common.error");
+            errorElement.hidden = false;
+            input.focus();
+            return false;
+          }
+
+          state.subcategory = result.value;
+          renderSubChips();
+          renderResults();
+          toast(t("cooking.subcategoryAdded"), "success");
+          return true;
+        }
+      }
+    ]
+  });
+
+  window.requestAnimationFrame(() => input.focus());
 }
 
 /* ------------------------------- Detail --------------------------------- */
@@ -408,20 +512,39 @@ function renderDetail(recipe) {
         ` : ""}
       </header>
 
-      <div class="servings">
-        <div>
-          <div class="servings__label">${escapeHtml(t("cooking.servingsLabel"))}</div>
-          <div class="servings__value" data-ref="servings-value">${escapeHtml(servingsLabel(state.servings))}</div>
+      <div class="recipe-controls">
+        <div class="servings">
+          <div>
+            <div class="servings__label">${escapeHtml(t("cooking.servingsLabel"))}</div>
+            <div class="servings__value" data-ref="servings-value">${escapeHtml(servingsLabel(state.servings))}</div>
+          </div>
+          <div class="servings__controls">
+            <button class="servings__button" type="button" data-action="decrease"
+              aria-label="${escapeHtml(t("cooking.decreaseServings"))}">
+              ${icon("minus")}
+            </button>
+            <button class="servings__button" type="button" data-action="increase"
+              aria-label="${escapeHtml(t("cooking.increaseServings"))}">
+              ${icon("plus")}
+            </button>
+          </div>
         </div>
-        <div class="servings__controls">
-          <button class="servings__button" type="button" data-action="decrease"
-            aria-label="${escapeHtml(t("cooking.decreaseServings"))}">
-            ${icon("minus")}
-          </button>
-          <button class="servings__button" type="button" data-action="increase"
-            aria-label="${escapeHtml(t("cooking.increaseServings"))}">
-            ${icon("plus")}
-          </button>
+
+        <div class="cook-toggle">
+          <div class="cook-toggle__head">
+            <div>
+              <div class="cook-toggle__title">${escapeHtml(t("cooking.cookingMode"))}</div>
+              <div class="cook-toggle__text">${escapeHtml(t("cooking.cookingModeHint"))}</div>
+            </div>
+          </div>
+
+          <div class="cook-start">
+            <button class="button button--block" type="button" data-action="start-cooking">
+              ${icon("play")}
+              <span>${escapeHtml(t("cooking.startCooking"))}</span>
+            </button>
+            <p class="field__hint">${escapeHtml(t("cooking.cookingHint"))}</p>
+          </div>
         </div>
       </div>
 
@@ -447,23 +570,6 @@ function renderDetail(recipe) {
         ` : `<p class="muted">${escapeHtml(t("cooking.noSteps"))}</p>`}
       </section>
 
-      <div class="cook-toggle">
-        <div>
-          <div class="cook-toggle__title">${escapeHtml(t("cooking.cookingMode"))}</div>
-          <div class="cook-toggle__text">${escapeHtml(t("cooking.cookingModeHint"))}</div>
-        </div>
-        <button class="switch" type="button" role="switch" data-action="toggle-cooking"
-          aria-checked="${state.cookingEnabled ? "true" : "false"}"
-          aria-label="${escapeHtml(t("cooking.cookingMode"))}"></button>
-      </div>
-
-      <div class="cook-start" data-ref="cook-start" ${state.cookingEnabled ? "" : "hidden"}>
-        <button class="button button--block" type="button" data-action="start-cooking">
-          ${icon("play")}
-          <span>${escapeHtml(t("cooking.startCooking"))}</span>
-        </button>
-        <p class="field__hint">${escapeHtml(t("cooking.cookingHint"))}</p>
-      </div>
     </div>
   `;
 
@@ -502,16 +608,6 @@ function changeServings(delta) {
   if (list) list.innerHTML = renderIngredients(recipe);
 }
 
-function toggleCookingMode() {
-  state.cookingEnabled = !state.cookingEnabled;
-
-  const toggle = root.querySelector('[data-action="toggle-cooking"]');
-  if (toggle) toggle.setAttribute("aria-checked", state.cookingEnabled ? "true" : "false");
-
-  const start = root.querySelector('[data-ref="cook-start"]');
-  if (start) start.hidden = !state.cookingEnabled;
-}
-
 async function deleteRecipe(id) {
   const recipe = store.getRecipe(id);
   if (!recipe) return;
@@ -536,26 +632,53 @@ async function deleteRecipe(id) {
 
 /* -------------------------------- Form ---------------------------------- */
 
+const NEW_OPTION = "__new__";
+
+function categoryOptions(selected) {
+  const options = store.getCategories().map((category) => `
+    <option value="${escapeHtml(category)}" ${category === selected ? "selected" : ""}>${escapeHtml(category)}</option>
+  `).join("");
+
+  return `${options}
+    <option value="${NEW_OPTION}">${escapeHtml(t("cooking.newCategoryPlaceholder"))}</option>`;
+}
+
+function subcategoryOptions(category, selected = "") {
+  const names = category && category !== NEW_OPTION ? store.getSubcategories(category) : [];
+  const options = names.map((name) => `
+    <option value="${escapeHtml(name)}" ${name === selected ? "selected" : ""}>${escapeHtml(name)}</option>
+  `).join("");
+
+  return `
+    <option value="">${escapeHtml(t("cooking.noSubcategory"))}</option>${options}
+    <option value="${NEW_OPTION}">${escapeHtml(t("cooking.subcategoryPlaceholder"))}</option>
+  `;
+}
+
+function handleChange(event) {
+  const form = event.target.closest('[data-form="recipe"]');
+  if (!form) return;
+
+  if (event.target.name === "category") {
+    const isNew = event.target.value === NEW_OPTION;
+    form.querySelector('[data-ref="new-category-field"]').hidden = !isNew;
+    form.querySelector('select[name="subcategory"]').innerHTML = subcategoryOptions(event.target.value);
+    form.querySelector('[data-ref="new-subcategory-field"]').hidden = true;
+    if (isNew) form.elements.newCategory.focus();
+    return;
+  }
+
+  if (event.target.name === "subcategory") {
+    const isNew = event.target.value === NEW_OPTION;
+    form.querySelector('[data-ref="new-subcategory-field"]').hidden = !isNew;
+    if (isNew) form.elements.newSubcategory.focus();
+  }
+}
+
 function renderForm(recipe) {
   const isEditing = Boolean(recipe);
-  const categories = store.getCategories();
-  const categoryValue = recipe?.category || categories[0] || "";
-
-  const categoryControl = categories.length
-    ? `
-      <select class="select" name="category" id="recipe-category">
-        ${categories.map((category) => `
-          <option value="${escapeHtml(category)}" ${category === categoryValue ? "selected" : ""}>
-            ${escapeHtml(category)}
-          </option>
-        `).join("")}
-      </select>
-    `
-    : `
-      <input class="input" type="text" name="category" id="recipe-category"
-        placeholder="${escapeHtml(t("cooking.newCategoryPlaceholder"))}"
-        value="${escapeHtml(categoryValue)}">
-    `;
+  const categoryValue = recipe?.category || store.getCategories()[0] || "";
+  const subcategoryValue = recipe?.subcategory || "";
 
   root.innerHTML = `
     <div class="back-row">
@@ -582,7 +705,26 @@ function renderForm(recipe) {
 
       <div class="field">
         <label class="field__label" for="recipe-category">${escapeHtml(t("cooking.categoryLabel"))}</label>
-        ${categoryControl}
+        <select class="select" name="category" id="recipe-category">
+          ${categoryOptions(categoryValue)}
+        </select>
+        <div class="field" data-ref="new-category-field" hidden>
+          <input class="input" type="text" name="newCategory" autocomplete="off"
+            aria-label="${escapeHtml(t("cooking.newCategoryPlaceholder"))}"
+            placeholder="${escapeHtml(t("cooking.newCategoryPlaceholder"))}">
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="field__label" for="recipe-subcategory">${escapeHtml(t("cooking.subcategoryLabel"))}</label>
+        <select class="select" name="subcategory" id="recipe-subcategory">
+          ${subcategoryOptions(categoryValue, subcategoryValue)}
+        </select>
+        <div class="field" data-ref="new-subcategory-field" hidden>
+          <input class="input" type="text" name="newSubcategory" autocomplete="off"
+            aria-label="${escapeHtml(t("cooking.subcategoryPlaceholder"))}"
+            placeholder="${escapeHtml(t("cooking.subcategoryPlaceholder"))}">
+        </div>
       </div>
 
       <div class="field">
@@ -620,7 +762,6 @@ function renderForm(recipe) {
 function saveRecipeForm(form) {
   const elements = form.elements;
   const title = String(elements.title.value || "").trim();
-  const category = String(elements.category.value || "").trim();
   const ingredients = String(elements.ingredients.value || "");
   const steps = String(elements.steps.value || "");
   const errorElement = root.querySelector('[data-ref="form-error"]');
@@ -638,26 +779,51 @@ function saveRecipeForm(form) {
     return;
   }
 
-  if (!category) {
-    showError(t("cooking.categoryRequired"), elements.category);
+  // Category: an existing one, or a new name typed under "New category".
+  let finalCategory = String(elements.category.value || "").trim();
+  if (finalCategory === NEW_OPTION) {
+    finalCategory = String(elements.newCategory.value || "").trim();
+  }
+  if (!finalCategory) {
+    showError(t("cooking.categoryRequired"), elements.newCategory);
     return;
   }
 
-  let finalCategory = category;
-  if (!store.getCategories().includes(finalCategory)) {
-    const existing = store.getCategories().find((item) => (
-      item.toLowerCase() === finalCategory.toLowerCase()
-    ));
+  const existingCategory = store.getCategories().find((item) => (
+    item.toLowerCase() === finalCategory.toLowerCase()
+  ));
+  if (existingCategory) {
+    finalCategory = existingCategory;
+  } else {
+    const result = store.addCategory(finalCategory);
+    if (!result.ok) {
+      showError(t("cooking.categoryRequired"), elements.newCategory);
+      return;
+    }
+    finalCategory = result.value;
+  }
 
-    if (existing) {
-      finalCategory = existing;
+  // Subcategory is optional: an empty value means none.
+  let finalSubcategory = String(elements.subcategory.value || "").trim();
+  if (finalSubcategory === NEW_OPTION) {
+    const newName = String(elements.newSubcategory.value || "").trim();
+    if (!newName) {
+      showError(t("cooking.subcategoryEmpty"), elements.newSubcategory);
+      return;
+    }
+
+    const existingSubcategory = store.getSubcategories(finalCategory).find((item) => (
+      item.toLowerCase() === newName.toLowerCase()
+    ));
+    if (existingSubcategory) {
+      finalSubcategory = existingSubcategory;
     } else {
-      const result = store.addCategory(finalCategory);
-      if (!result.ok) {
-        showError(t("cooking.categoryRequired"), elements.category);
+      const subResult = store.addSubcategory(finalCategory, newName);
+      if (!subResult.ok) {
+        showError(t("common.error"), elements.newSubcategory);
         return;
       }
-      finalCategory = result.value;
+      finalSubcategory = subResult.value;
     }
   }
 
@@ -666,10 +832,18 @@ function saveRecipeForm(form) {
     errorElement.textContent = "";
   }
 
+  const fields = {
+    title,
+    category: finalCategory,
+    subcategory: finalSubcategory,
+    ingredients,
+    steps
+  };
+
   const wasEditing = Boolean(state.recipeId);
   const recipe = wasEditing
-    ? store.updateRecipe(state.recipeId, { title, category: finalCategory, ingredients, steps })
-    : store.addRecipe({ title, category: finalCategory, ingredients, steps });
+    ? store.updateRecipe(state.recipeId, fields)
+    : store.addRecipe(fields);
 
   if (!recipe) {
     showError(t("common.error"), elements.title);
@@ -703,7 +877,12 @@ function openCategoryEditor() {
         <span>${escapeHtml(t("common.add"))}</span>
       </button>
     </form>
+    <button class="button button--secondary button--small category-editor__restore" type="button"
+      data-ref="restore-defaults">
+      ${escapeHtml(t("cooking.restoreDefaults"))}
+    </button>
     <p class="field__hint text-danger" data-ref="category-error" role="alert" hidden></p>
+    <p class="field__hint" data-ref="category-info" aria-live="polite" hidden></p>
   `;
 
   const list = body.querySelector('[data-ref="category-list"]');
@@ -847,6 +1026,25 @@ function openCategoryEditor() {
     toast(t("cooking.categoryDeleted"), "success");
     input.focus();
   };
+
+  const restoreButton = body.querySelector('[data-ref="restore-defaults"]');
+  const infoElement = body.querySelector('[data-ref="category-info"]');
+
+  restoreButton.addEventListener("click", () => {
+    const result = store.restoreDefaultCategories();
+    if (!result.ok) {
+      showError(t("common.error"));
+      return;
+    }
+
+    clearError();
+    paintCategories();
+    refreshListAfterCategories();
+    infoElement.textContent = result.added
+      ? t("cooking.defaultsRestored")
+      : t("cooking.defaultsPresent");
+    infoElement.hidden = false;
+  });
 
   body.addEventListener("click", (event) => {
     const action = event.target.closest("[data-cat-action]")?.dataset.catAction;
