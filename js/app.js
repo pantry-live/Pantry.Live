@@ -25,6 +25,9 @@ const elements = {
   splashButton: document.getElementById("splash-button"),
   splashHint: document.getElementById("splash-hint"),
   splashWarning: document.getElementById("splash-warning"),
+  splashPrivacy: document.getElementById("splash-privacy"),
+  splashPrivacyTitle: document.getElementById("splash-privacy-title"),
+  splashPrivacyBody: document.getElementById("splash-privacy-body"),
   splashNote: document.querySelector(".splash__note"),
   app: document.getElementById("app"),
   view: document.getElementById("view"),
@@ -82,6 +85,13 @@ function setSplashDisabled(disabled) {
 }
 
 function applySplashLabels() {
+  if (elements.splashPrivacyTitle) {
+    elements.splashPrivacyTitle.textContent = t("splash.privacyTitle");
+  }
+  if (elements.splashPrivacyBody) {
+    elements.splashPrivacyBody.textContent = t("splash.privacyBody");
+  }
+  if (elements.splashPrivacy) elements.splashPrivacy.hidden = false;
   if (elements.splashNote) elements.splashNote.textContent = t("splash.driveNote");
   elements.splashButton?.setAttribute("aria-label", t("splash.signIn"));
 }
