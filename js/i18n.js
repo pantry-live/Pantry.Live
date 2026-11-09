@@ -507,7 +507,7 @@ const STRINGS = {
       signedInAs: "Signed in as {name}",
       googleAccount: "Google account",
       language: "Language",
-      languageHint: "The app is available in Dutch and English.",
+      languageHint: "The app is available in Dutch, German and English.",
       tutorial: "Tutorial",
       tutorialHint: "View the walkthrough again.",
       showTutorial: "Show tutorial",
