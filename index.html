@@ -106,17 +106,16 @@
 
   <!-- Splash / sign-in gate -->
   <section id="splash" class="splash" aria-labelledby="splash-wordmark">
-    <div id="splash-privacy" class="splash__privacy" hidden>
-      <h2 id="splash-privacy-title" class="splash__privacy-title"></h2>
-      <p id="splash-privacy-body" class="splash__privacy-body"></p>
-    </div>
     <button id="splash-button" class="splash__button" type="button" disabled aria-label="Inloggen met Google">
       <span class="splash__hat" aria-hidden="true"><svg class="icon"><use href="#icon-hat"></use></svg></span>
       <span id="splash-wordmark" class="splash__wordmark">Pantry</span>
       <span id="splash-hint" class="splash__hint">Tik om te beginnen</span>
     </button>
     <p id="splash-warning" class="splash__warning" role="alert" hidden></p>
-    <p class="splash__note">Je recepten worden bewaard in je eigen Google Drive.<br>Your recipes are stored in your own Google Drive.</p>
+    <details id="splash-privacy" class="splash__privacy" hidden>
+      <summary id="splash-privacy-title" class="splash__privacy-title"></summary>
+      <p id="splash-privacy-body" class="splash__privacy-body"></p>
+    </details>
   </section>
 
   <!-- Main application shell -->

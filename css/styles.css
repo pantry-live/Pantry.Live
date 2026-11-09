@@ -256,29 +256,23 @@ a {
   font-size: 13.5px;
 }
 
-.splash__note {
-  max-width: 340px;
-  color: var(--text-faint);
-  font-size: 12.5px;
-  line-height: 1.5;
-}
-
 .splash__privacy {
-  display: grid;
-  gap: 4px;
   max-width: 360px;
+  color: var(--text-muted);
   text-align: left;
 }
 
 .splash__privacy-title {
-  margin: 0;
+  cursor: pointer;
   color: var(--text);
   font-size: 13.5px;
   font-weight: 650;
+  list-style-position: inside;
+  text-align: center;
 }
 
 .splash__privacy-body {
-  margin: 0;
+  margin: 6px 0 0;
   color: var(--text-muted);
   font-size: 12.5px;
   line-height: 1.45;
