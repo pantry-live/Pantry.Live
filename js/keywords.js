@@ -11,28 +11,33 @@
 export const KEYWORD_RULES = [
   {
     category: "Breakfast",
-    keywords: ["breakfast", "ontbijt", "pancake", "pancakes", "porridge", "oatmeal",
-      "muesli", "granola", "toast", "omelette", "omelet", "waffle", "yogurt"],
+    keywords: ["breakfast", "ontbijt", "frühstück", "pancake", "pancakes", "pfannkuchen",
+      "porridge", "oatmeal", "haferbrei", "muesli", "müsli", "granola", "toast",
+      "omelette", "omelet", "omelett", "waffle", "waffel", "yogurt", "joghurt"],
     subcategories: [
-      { name: "Sweet", keywords: ["pancake", "pancakes", "waffle", "granola", "muesli", "syrup"] }
+      { name: "Sweet", keywords: ["pancake", "pancakes", "pfannkuchen", "waffle", "waffel",
+        "granola", "muesli", "müsli", "syrup", "sirup"] }
     ]
   },
   {
     category: "Lunch",
-    keywords: ["lunch", "sandwich", "wrap", "salad", "soup", "soep", "quesadilla", "bowl"],
+    keywords: ["lunch", "mittagessen", "sandwich", "wrap", "salad", "salat", "soup", "suppe",
+      "soep", "quesadilla", "bowl"],
     subcategories: [
-      { name: "Soup", keywords: ["soup", "soep", "broth"] },
-      { name: "Salad", keywords: ["salad", "salade"] }
+      { name: "Soup", keywords: ["soup", "soep", "suppe", "broth", "brühe"] },
+      { name: "Salad", keywords: ["salad", "salade", "salat"] }
     ]
   },
   {
     category: "Dinner",
-    keywords: ["dinner", "diner", "curry", "pasta", "lasagne", "stew", "risotto", "roast",
-      "casserole", "chili", "stir-fry", "bolognese", "lentil", "linzen", "rice", "rijst"],
+    keywords: ["dinner", "diner", "abendessen", "curry", "pasta", "lasagne", "stew", "eintopf",
+      "risotto", "roast", "braten", "casserole", "auflauf", "chili", "stir-fry", "bolognese",
+      "lentil", "linzen", "linsen", "rice", "rijst", "reis"],
     subcategories: [
-      { name: "Pasta", keywords: ["pasta", "spaghetti", "penne", "lasagne", "bolognese", "noodles"] },
+      { name: "Pasta", keywords: ["pasta", "spaghetti", "penne", "lasagne", "bolognese",
+        "noodles", "nudeln"] },
       { name: "Curry", keywords: ["curry", "masala", "tikka", "korma"] },
-      { name: "Soup", keywords: ["soup", "soep", "broth"] }
+      { name: "Soup", keywords: ["soup", "soep", "suppe", "broth", "brühe"] }
     ]
   }
 ];

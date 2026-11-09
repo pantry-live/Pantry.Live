@@ -1,24 +1,27 @@
 /*
  * Pantry — translations and language helpers.
  *
- * The app currently ships with Dutch and English. All user-facing text
- * lives in this file so adding another language later only means adding
+ * The app currently ships with Dutch, English, and German. All user-facing
+ * text lives in this file so adding another language later only means adding
  * another dictionary and a LANGUAGES entry.
  */
 
 export const LANGUAGES = [
   { code: "nl", nativeName: "Nederlands", speech: "nl-NL", locale: "nl-NL" },
-  { code: "en", nativeName: "English", speech: "en-US", locale: "en-US" }
+  { code: "en", nativeName: "English", speech: "en-US", locale: "en-US" },
+  { code: "de", nativeName: "Deutsch", speech: "de-DE", locale: "de-DE" }
 ];
 
 const LANGUAGE_LABELS = {
-  nl: { nl: "Nederlands", en: "Engels" },
-  en: { nl: "Dutch", en: "English" }
+  nl: { nl: "Nederlands", en: "Engels", de: "Duits" },
+  en: { nl: "Dutch", en: "English", de: "German" },
+  de: { nl: "Niederländisch", en: "Englisch", de: "Deutsch" }
 };
 
 const DEFAULT_CATEGORIES = {
   nl: ["Ontbijt", "Lunch", "Diner", "Snack"],
-  en: ["Breakfast", "Lunch", "Dinner", "Snack"]
+  en: ["Breakfast", "Lunch", "Dinner", "Snack"],
+  de: ["Frühstück", "Mittagessen", "Abendessen", "Snack"]
 };
 
 const VOICE_COMMANDS = {
@@ -575,6 +578,279 @@ const STRINGS = {
       speech: "Voice recognition stopped.",
       noData: "No data is available."
     }
+  },
+
+  de: {
+    common: {
+      back: "Zurück",
+      close: "Schließen",
+      cancel: "Abbrechen",
+      save: "Speichern",
+      saving: "Speichern…",
+      add: "Hinzufügen",
+      edit: "Bearbeiten",
+      delete: "Löschen",
+      rename: "Umbenennen",
+      continue: "Weiter",
+      skip: "Überspringen",
+      next: "Weiter",
+      done: "Fertig",
+      retry: "Erneut versuchen",
+      confirm: "Bestätigen",
+      loading: "Laden…",
+      all: "Alle",
+      search: "Suchen",
+      clear: "Leeren",
+      error: "Etwas ist schiefgelaufen.",
+      offline: "Du bist offline. Die zuletzt gespeicherten Daten werden angezeigt.",
+      savedLocally: "Lokal gespeichert. Wir versuchen es später erneut.",
+      sessionExpired: "Deine Sitzung ist abgelaufen.",
+      reauthenticate: "Erneut anmelden",
+      signOut: "Abmelden",
+      unsupported: "In diesem Browser nicht unterstützt.",
+      unknownError: "Unbekannter Fehler."
+    },
+    nav: {
+      cooking: "Kochen",
+      shopping: "Einkaufen",
+      brainstorm: "Ideen",
+      settings: "Einstellungen",
+      main: "Hauptnavigation"
+    },
+    splash: {
+      tapToStart: "Tippen zum Starten",
+      tapToContinue: "Tippen zum Fortfahren",
+      signIn: "Mit Google anmelden",
+      configMissing: "Die Google Client-ID fehlt. Füge sie in config.js ein und lade die Seite neu. Siehe README.md für die Einrichtung.",
+      driveNote: "Deine Rezepte werden in deinem eigenen Google Drive gespeichert.",
+      signingIn: "Anmelden…",
+      loadingRecipes: "Rezepte laden…",
+      gisUnavailable: "Google-Anmeldung konnte nicht geladen werden. Prüfe deine Internetverbindung und lade die Seite neu.",
+      retry: "Erneut versuchen"
+    },
+    language: {
+      title: "Sprache wählen",
+      detected: "Aus deinem Google-Konto erkannt: {language}.",
+      detectedUnknown: "Wir konnten deine Google-Sprache nicht lesen. Wähle eine Sprache.",
+      label: "Sprache",
+      hint: "Die App ist auf Deutsch, Niederländisch und Englisch verfügbar.",
+      continue: "Weiter"
+    },
+    welcome: {
+      title: "Willkommen bei Pantry",
+      text: "Wähle, wo du beginnen möchtest. Du kannst jederzeit den Tab wechseln.",
+      skipTutorial: "Einführung überspringen",
+      cookingTitle: "Kochen",
+      cookingText: "Rezepte ansehen, suchen und hinzufügen.",
+      shoppingTitle: "Einkaufen",
+      shoppingText: "Bald: Listen pro Rezept.",
+      brainstormTitle: "Ideen",
+      brainstormText: "Bald: Rezeptideen."
+    },
+    tutorial: {
+      title: "So funktioniert Pantry",
+      step1Title: "Kochen",
+      step1Text: "Suche nach Titel oder Zutat, filtere nach Kategorie und füge eigene Rezepte hinzu.",
+      step2Title: "Portionen",
+      step2Text: "Öffne ein Rezept und passe oben die Anzahl der Personen an. Die Mengen werden sofort aktualisiert.",
+      step3Title: "Kochmodus",
+      step3Text: "Aktiviere den Kochmodus für eine Schritt-für-Schritt-Ansicht. Tippe oder sage ‚next‘, um fortzufahren.",
+      step4Title: "In Drive gespeichert",
+      step4Text: "Deine Rezepte liegen im Ordner Pantry App in deinem eigenen Google Drive. Es gibt keinen Server und keine Fotos.",
+      skip: "Überspringen",
+      back: "Zurück",
+      next: "Weiter",
+      done: "Los geht’s",
+      counter: "{current} von {total}"
+    },
+    cooking: {
+      title: "Kochen",
+      searchPlaceholder: "Nach Titel oder Zutat suchen",
+      searchClear: "Suche löschen",
+      addRecipe: "Rezept hinzufügen",
+      editCategories: "Kategorien bearbeiten",
+      noRecipesTitle: "Noch keine Rezepte",
+      noRecipesText: "Füge dein erstes Rezept hinzu und starte mit dem Kochen.",
+      noResultsTitle: "Keine Rezepte gefunden",
+      noResultsText: "Versuche einen anderen Suchbegriff oder eine andere Kategorie.",
+      addFirst: "Erstes Rezept hinzufügen",
+      noIngredients: "Keine Zutaten",
+      noSteps: "Keine Zubereitung",
+      categoriesTitle: "Kategorien",
+      categoriesHint: "Füge Kategorien hinzu, benenne sie um oder lösche sie. Eine verwendete Kategorie kann nicht gelöscht werden.",
+      newCategoryPlaceholder: "Neue Kategorie",
+      categoryEmpty: "Gib einen Kategorienamen ein.",
+      categoryDuplicate: "Diese Kategorie gibt es bereits.",
+      categoryInUse: "Diese Kategorie wird von {count} Rezept(en) verwendet.",
+      categoryLast: "Mindestens eine Kategorie muss bleiben.",
+      categoryAdded: "Kategorie hinzugefügt.",
+      categoryRenamed: "Kategorie umbenannt.",
+      categoryDeleted: "Kategorie gelöscht.",
+      restoreDefaults: "Standardkategorien wiederherstellen",
+      defaultsRestored: "Standardkategorien hinzugefügt.",
+      defaultsPresent: "Die Standardkategorien sind bereits in der Liste.",
+      subcategoriesTitle: "Unterkategorien",
+      addSubcategory: "Unterkategorie hinzufügen",
+      subcategoryPlaceholder: "Neue Unterkategorie",
+      subcategoryAdded: "Unterkategorie hinzugefügt.",
+      subcategoryDuplicate: "Diese Unterkategorie gibt es bereits.",
+      subcategoryEmpty: "Gib einen Namen für die Unterkategorie ein.",
+      subcategoryLabel: "Unterkategorie",
+      noSubcategory: "Keine",
+      categoryNameLabel: "Name",
+      renameCategory: "Kategorie umbenennen",
+      deleteCategory: "Kategorie löschen",
+      deleteCategoryTitle: "Kategorie löschen?",
+      deleteCategoryText: "„{name}“ wird gelöscht.",
+      clearFilters: "Filter löschen",
+      nothingToCook: "Dieses Rezept hat noch keine Zutaten oder Schritte.",
+      deleteRecipeTitle: "Rezept löschen?",
+      deleteRecipeText: "„{title}“ wird endgültig gelöscht.",
+      recipeDeleted: "Rezept gelöscht.",
+      recipeSaved: "Rezept gespeichert.",
+      recipeUpdated: "Rezept aktualisiert.",
+      newRecipe: "Neues Rezept",
+      editRecipe: "Rezept bearbeiten",
+      titleLabel: "Titel",
+      titlePlaceholder: "z. B. Pastasauce",
+      categoryLabel: "Kategorie",
+      ingredientsLabel: "Zutaten",
+      ingredientsHint: "Eine Zutat pro Zeile. Zahlen am Anfang werden skaliert.",
+      ingredientsPlaceholder: "2 Zwiebeln\n1 Dose Tomaten\nSalz nach Geschmack",
+      stepsLabel: "Zubereitung",
+      stepsHint: "Ein Schritt pro Zeile.",
+      stepsPlaceholder: "Zwiebel würfeln.\nPasta kochen.\nAlles vermengen.",
+      titleRequired: "Gib einen Titel ein.",
+      categoryRequired: "Wähle eine Kategorie.",
+      saveRecipe: "Rezept speichern",
+      backToList: "Zurück zu Rezepten",
+      ingredientsTitle: "Zutaten",
+      stepsTitle: "Zubereitung",
+      servingsLabel: "Portionen",
+      servingsOne: "1 Person",
+      servingsOther: "{count} Personen",
+      decreaseServings: "Weniger Portionen",
+      increaseServings: "Mehr Portionen",
+      cookingMode: "Kochmodus",
+      cookingModeHint: "Schritt für Schritt kochen mit großer Schrift, Tippen und Sprache.",
+      startCooking: "Kochen starten",
+      ingredientProgress: "Zutat {current} von {total}",
+      stepProgress: "Schritt {current} von {total}",
+      finishTitle: "Fertig!",
+      finishText: "Guten Appetit.",
+      previous: "Zurück",
+      nextItem: "Weiter",
+      startVoice: "Sprache starten",
+      stopVoice: "Sprache stoppen",
+      listening: "Höre zu… sage ‚next‘",
+      voiceUnsupported: "Spracherkennung wird in diesem Browser nicht unterstützt.",
+      micDenied: "Mikrofonzugriff wurde verweigert.",
+      voiceError: "Spracherkennung wurde beendet.",
+      tapHint: "Tippen, um fortzufahren",
+      voiceHint: "Oder sage ‚next‘",
+      exitCooking: "Kochmodus schließen",
+      keepAwake: "Bildschirm bleibt an",
+      scaleNote: "Nur Zahlen am Anfang einer Zutat werden skaliert.",
+      doneCooking: "Fertig"
+    },
+    shopping: {
+      title: "Einkaufen",
+      soon: "Demnächst",
+      placeholderTitle: "Einkaufsliste pro Rezept",
+      placeholderText: "Diese Funktion kommt später. Bald siehst du hier pro Rezept eine Einkaufsliste, die sich automatisch an die Portionszahl anpasst.",
+      step1: "Wähle ein Rezept und die Portionszahl.",
+      step2: "Die benötigten Mengen werden zusammengeführt.",
+      step3: "Hake Artikel beim Einkaufen ab."
+    },
+    brainstorm: {
+      title: "Ideen",
+      soon: "Demnächst",
+      placeholderTitle: "Rezeptideen für dich",
+      placeholderText: "Diese Funktion kommt später. Du beantwortest bald ein paar Fragen und erhältst passende Rezeptvorschläge.",
+      step1: "Wähle einen Kontinent, ein Budget und eine Kochzeit.",
+      step2: "Grenze es auf ein Land ein.",
+      step3: "Wähle: mit dem kochen, was du hast, oder neu beginnen.",
+      step4: "Speichere Vorschläge oder sende sie an Einkaufen."
+    },
+    settings: {
+      title: "Einstellungen",
+      account: "Konto",
+      signedInAs: "Angemeldet als {name}",
+      googleAccount: "Google-Konto",
+      language: "Sprache",
+      languageHint: "Die App ist auf Deutsch, Niederländisch und Englisch verfügbar.",
+      tutorial: "Einführung",
+      tutorialHint: "Sieh dir die Erklärung erneut an.",
+      showTutorial: "Einführung anzeigen",
+      manual: "Benutzerhandbuch",
+      manualHint: "Lies, wie die App funktioniert und wo deine Rezepte gespeichert werden.",
+      openManual: "Handbuch öffnen",
+      signOut: "Abmelden",
+      signOutHint: "Deine Rezepte bleiben in Google Drive.",
+      exportTitle: "Rezepte exportieren",
+      exportHint: "Lade alle Rezepte als ZIP mit Textdateien herunter.",
+      exportDone: "Rezepte exportiert.",
+      exportEmpty: "Es gibt noch keine Rezepte zum Exportieren.",
+      importTitle: "Rezepte importieren",
+      importHint: "Importiere eine ZIP-Datei oder eine Textdatei mit Rezepten.",
+      importDone: "{count} Rezept(e) importiert, {skipped} übersprungen.",
+      importNone: "Keine Rezepte in dieser Datei gefunden.",
+      importError: "Diese Datei konnte nicht gelesen werden.",
+      notSorted: "Unsortiert",
+      copyLabel: "Kopie",
+      signOutTitle: "Abmelden?",
+      signOutText: "Du wirst auf diesem Gerät abgemeldet. Deine Rezepte bleiben in Google Drive.",
+      signOutUnsavedTitle: "Änderungen nicht gespeichert",
+      signOutUnsavedText: "Deine Änderungen konnten nicht gespeichert werden. Wenn du dich jetzt abmeldest, können sie verloren gehen.",
+      signOutAnyway: "Trotzdem abmelden",
+      staySignedIn: "Angemeldet bleiben",
+      about: "Über Pantry",
+      version: "Version 1.0",
+      dataLocation: "In Google Drive gespeichert",
+      signedOut: "Du wurdest abgemeldet.",
+      languageChanged: "Sprache geändert."
+    },
+    manual: {
+      title: "Benutzerhandbuch",
+      introTitle: "Was ist Pantry?",
+      introBody: "Pantry ist eine einfache Rezept-App ohne Server. Rezepte sind reiner Text: Titel, Kategorie, Zutaten und Zubereitung. Es gibt keine Fotos.",
+      startTitle: "Anmelden",
+      startBody: "Tippe auf den Kochhut auf dem Startbildschirm und melde dich mit Google an. Die App nutzt den drive.file-Bereich. Damit darf Pantry nur Dateien sehen und bearbeiten, die die App selbst erstellt hat.",
+      dataTitle: "Wo sind deine Rezepte?",
+      dataBody: "Deine Rezepte liegen in deinem eigenen Google Drive, im Ordner Pantry App, in der Datei pantry-data.json. Es gibt kein Backend und keine Daten werden an einen anderen Server gesendet. Die App speichert lokal eine temporäre Kopie für schnelles Laden.",
+      recipesTitle: "Rezepte verwalten",
+      recipesBody: "Nutze den Tab Kochen, um nach Titel oder Zutat zu suchen, nach Kategorien zu filtern und Rezepte hinzuzufügen. Tippe auf ein Rezept, um es zu öffnen. Dort kannst du es auch bearbeiten oder löschen.",
+      servingsTitle: "Portionen",
+      servingsBody: "Jedes Rezept beginnt bei 2 Personen. Mit den Plus- und Minus-Schaltflächen änderst du die Portionszahl. Zahlen am Anfang einer Zutat werden sofort skaliert. Mengen in der Zubereitung werden nicht angepasst.",
+      cookingTitle: "Kochmodus",
+      cookingBody: "Aktiviere den Kochmodus und tippe auf Kochen starten. Du gehst Schritt für Schritt durch die Zutaten und danach durch die Zubereitung. Tippe auf den Bildschirm, um fortzufahren. Mit der Mikrofontaste kannst du Sprache nutzen; sie startet erst, wenn du darauf tippst. Sage ‚next‘, um fortzufahren.",
+      voiceTitle: "Sprache und Bildschirm an",
+      voiceBody: "Spracherkennung nutzt die Web Speech API und funktioniert in den meisten Chromium-Browsern und in Safari, nicht in Firefox. Solange ein Rezept geöffnet ist, versucht Pantry, den Bildschirm mit der Wake Lock API anzulassen. Wenn dein Browser das nicht unterstützt, funktioniert die App trotzdem.",
+      languageTitle: "Sprache",
+      languageBody: "Pantry ist auf Deutsch, Niederländisch und Englisch verfügbar. Bei der ersten Anmeldung wird deine Google-Sprache vorgeschlagen. Du kannst die Sprache später in den Einstellungen ändern. Rezepttexte werden nicht automatisch übersetzt.",
+      shoppingTitle: "Einkaufen und Ideen",
+      shoppingBody: "Diese Tabs sind noch Platzhalter. Später gibt es eine Einkaufsliste pro Rezept und eine Ideenfunktion, die Rezeptvorschläge macht.",
+      privacyTitle: "Datenschutz und Abmelden",
+      privacyBody: "Pantry verwendet keine Analysen und zeigt keine Werbung. Wenn du dich abmeldest, wird der Zugriff auf dein Drive widerrufen und die lokale Kopie gelöscht. Deine Rezepte bleiben in Google Drive.",
+      version: "Pantry 1.0 — statische Rezept-App"
+    },
+    errors: {
+      authUnavailable: "Google-Anmeldung ist nicht verfügbar. Prüfe deine Internetverbindung und lade die Seite neu.",
+      authFailed: "Anmeldung fehlgeschlagen.",
+      authDenied: "Anmeldung abgebrochen.",
+      popupClosed: "Das Anmeldefenster wurde geschlossen.",
+      driveLoad: "Deine Rezepte konnten nicht geladen werden.",
+      driveSave: "Deine Änderungen konnten nicht gespeichert werden.",
+      drivePermission: "Pantry hat keinen Zugriff auf den Speicher in Google Drive.",
+      noCache: "Es ist keine lokale Kopie verfügbar.",
+      sessionExpired: "Deine Sitzung ist abgelaufen. Melde dich erneut an, um fortzufahren.",
+      recipeNotFound: "Rezept nicht gefunden.",
+      config: "Die Konfiguration fehlt. Füge deine Google Client-ID in config.js ein.",
+      storageCorrupt: "Die Daten in Google Drive konnten nicht gelesen werden.",
+      micUnsupported: "Spracherkennung wird in diesem Browser nicht unterstützt.",
+      speech: "Spracherkennung wurde beendet.",
+      noData: "Es sind keine Daten verfügbar."
+    }
   }
 };
 
@@ -610,18 +886,21 @@ let current = "en";
 
 export function normalizeLanguage(code) {
   const raw = String(code || "").toLowerCase();
-  return raw.startsWith("nl") ? "nl" : "en";
+  if (raw.startsWith("nl")) return "nl";
+  if (raw.startsWith("de")) return "de";
+  return "en";
 }
 
 export function isSupportedLocale(locale) {
   const raw = String(locale || "").toLowerCase();
-  return raw.startsWith("nl") || raw.startsWith("en");
+  return raw.startsWith("nl") || raw.startsWith("en") || raw.startsWith("de");
 }
 
 export function detectLanguage(googleLocale, fallback = "en") {
   const raw = String(googleLocale || "").toLowerCase();
   if (raw.startsWith("nl")) return "nl";
   if (raw.startsWith("en")) return "en";
+  if (raw.startsWith("de")) return "de";
   return normalizeLanguage(fallback);
 }
 
