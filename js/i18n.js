@@ -362,7 +362,7 @@ const STRINGS = {
       detected: "Detected from your Google account: {language}.",
       detectedUnknown: "We couldn’t read your Google language. Choose a language.",
       label: "Language",
-      hint: "The app is available in Dutch and English.",
+      hint: "The app is available in Dutch, German and English.",
       continue: "Continue"
     },
     welcome: {
