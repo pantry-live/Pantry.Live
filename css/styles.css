@@ -1587,6 +1587,10 @@ a {
   flex-wrap: wrap;
 }
 
+.modal__actions:empty {
+  display: none;
+}
+
 /* ------------------------------- Toast ---------------------------------- */
 
 .toast-root {
@@ -1765,6 +1769,26 @@ a {
   padding-top: 6px;
   color: var(--text-faint);
   font-size: 12.5px;
+}
+
+.manual__bar {
+  position: sticky;
+  top: -20px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: -20px -20px 0;
+  padding: 20px 20px 4px;
+  background: var(--bg-elevated);
+}
+
+.manual__title {
+  font-size: 20px;
+  font-weight: 690;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
 }
 
 /* ------------------------------ Placeholder ------------------------------ */

@@ -144,6 +144,13 @@ function openManual() {
   const wrapper = document.createElement("div");
   wrapper.className = "manual";
   wrapper.innerHTML = `
+    <div class="manual__bar">
+      <h2 class="manual__title">${escapeHtml(t("manual.title"))}</h2>
+      <button class="icon-button" type="button" data-manual-close
+              aria-label="${escapeHtml(t("common.close"))}">
+        ${icon("close")}
+      </button>
+    </div>
     ${getManual().map((section) => `
       <section class="manual__section">
         <h2>${escapeHtml(t(section.title))}</h2>
@@ -153,16 +160,17 @@ function openManual() {
     <p class="manual__meta">${escapeHtml(t("manual.version"))}</p>
   `;
 
-  openModal({
-    title: t("manual.title"),
+  const modal = openModal({
+    title: "",
     body: wrapper,
-    actions: [
-      {
-        label: t("common.close"),
-        variant: "secondary"
-      }
-    ]
+    actions: []
   });
+
+  modal.modal?.removeAttribute("aria-labelledby");
+  modal.modal?.setAttribute("aria-label", t("manual.title"));
+
+  wrapper.querySelector("[data-manual-close]")
+    .addEventListener("click", () => modal.close());
 }
 
 function handleExport() {
