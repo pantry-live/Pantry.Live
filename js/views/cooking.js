@@ -543,7 +543,6 @@ function renderDetail(recipe) {
               ${icon("play")}
               <span>${escapeHtml(t("cooking.startCooking"))}</span>
             </button>
-            <p class="field__hint">${escapeHtml(t("cooking.cookingHint"))}</p>
           </div>
         </div>
       </div>

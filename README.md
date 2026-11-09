@@ -11,6 +11,7 @@ The interface is available in **Dutch and English**. The first time someone sign
 - Recipe list with search by title or ingredient and category filters.
 - Add, edit, and delete recipes.
 - Category management.
+- Import and export of recipes as text files or ZIP archives.
 - Serving scaler: every recipe starts at 2 servings and leading ingredient quantities scale live.
 - Full-screen cooking mode with tap, keyboard, and optional voice navigation.
 - Screen Wake Lock while a recipe is open (when supported).
@@ -152,13 +153,18 @@ Recipes are text only: title, category, ingredients, and steps. There are no pho
     ├── app.js             # bootstrap, auth gate, navigation, shared chrome
     ├── auth.js            # Google Identity Services token flow
     ├── drive.js           # Google Drive folder/file read and write
+    ├── exchange.js        # recipe text format and export
     ├── i18n.js            # Dutch/English strings and language helpers
+    ├── importer.js        # import of recipe text files and ZIP archives
+    ├── keywords.js        # keywords for sorting imported recipes
     ├── onboarding.js      # language confirmation, welcome, tutorial
     ├── recipe.js          # ingredient scaling and search helpers
     ├── speech.js          # Web Speech API wrapper
     ├── store.js           # state, local cache, debounced Drive saves
     ├── ui.js              # modal, toast, icons, escaping helpers
+    ├── unzip.js           # minimal ZIP reader
     ├── wakelock.js        # Screen Wake Lock helper
+    ├── zip.js             # minimal ZIP writer
     └── views/
         ├── cooking.js     # recipe list, detail, form, categories, cooking mode
         ├── shopping.js    # placeholder
@@ -178,7 +184,7 @@ Recipes are text only: title, category, ingredients, and steps. There are no pho
 ## Limitations
 
 - Shopping and Brainstorm are placeholders; they are not implemented yet.
-- No recipe images, sharing, import, export, or multi-user collaboration.
+- No recipe images, sharing, or multi-user collaboration.
 - No automatic language translation of recipe content.
 - No refresh token. Re-authentication is required when the access token expires.
 - Offline mode can read cached data but cannot save to Drive until the connection returns.

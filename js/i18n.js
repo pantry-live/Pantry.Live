@@ -17,8 +17,8 @@ const LANGUAGE_LABELS = {
 };
 
 const DEFAULT_CATEGORIES = {
-  nl: ["Ontbijt", "Lunch", "Diner"],
-  en: ["Breakfast", "Lunch", "Dinner"]
+  nl: ["Ontbijt", "Lunch", "Diner", "Snack"],
+  en: ["Breakfast", "Lunch", "Dinner", "Snack"]
 };
 
 const VOICE_COMMANDS = {
@@ -185,7 +185,6 @@ const STRINGS = {
       cookingMode: "Kookmodus",
       cookingModeHint: "Stap voor stap koken met grote tekst, tikken en spraak.",
       startCooking: "Start met koken",
-      cookingHint: "Het scherm blijft aan zolang dit recept open is.",
       ingredientProgress: "Ingrediënt {current} van {total}",
       stepProgress: "Stap {current} van {total}",
       finishTitle: "Klaar!",
@@ -459,7 +458,6 @@ const STRINGS = {
       cookingMode: "Cooking mode",
       cookingModeHint: "Step-by-step cooking with large text, tapping, and voice.",
       startCooking: "Start cooking",
-      cookingHint: "The screen stays awake while this recipe is open.",
       ingredientProgress: "Ingredient {current} of {total}",
       stepProgress: "Step {current} of {total}",
       finishTitle: "Done!",
