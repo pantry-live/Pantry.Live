@@ -88,7 +88,7 @@ const STRINGS = {
       detected: "Gedetecteerd via je Google-account: {language}.",
       detectedUnknown: "We konden je Google-taal niet lezen. Kies een taal.",
       label: "Taal",
-      hint: "De app is beschikbaar in het Nederlands en Engels.",
+      hint: "De app is beschikbaar in het Nederlands, Duits en Engels.",
       continue: "Doorgaan"
     },
     welcome: {
