@@ -1,20 +1,20 @@
 /*
- * Pantry — settings, manual, language, tutorial, and sign-out.
+ * Pantry — settings, manual, language, and tutorial.
  */
 
-import * as auth from "../auth.js";
-import { LANGUAGES, getManual, t } from "../i18n.js";
-import { escapeHtml, icon, openModal, confirmDialog, toast } from "../ui.js";
+import { LANGUAGES, t } from "../i18n.js";
+import { escapeHtml, icon, confirmDialog, toast } from "../ui.js";
 import { exportRecipes } from "../exchange.js";
 import { importFile } from "../importer.js";
+import { openManual } from "../manual.js";
+import { clearConnectionCode, hasConnection } from "../brainstorm-api.js";
 import * as store from "../store.js";
 
 export function render(root, ctx) {
   ctx.setBack(() => ctx.closeSettings());
 
-  const profile = auth.getProfile();
-  const name = profile?.name || profile?.email || t("settings.googleAccount");
   const language = store.getSettings().language || "en";
+  const brainstormConnected = hasConnection();
 
   root.innerHTML = `
     <div class="page-header">
@@ -22,18 +22,6 @@ export function render(root, ctx) {
     </div>
 
     <div class="settings">
-      <section class="settings-card" aria-label="${escapeHtml(t("settings.account"))}">
-        <div class="settings-row">
-          <div class="settings-row__text">
-            <div class="account-name">
-              ${icon("user")}
-              <span>${escapeHtml(name)}</span>
-            </div>
-            <div class="settings-row__desc">${escapeHtml(t("settings.dataLocation"))}</div>
-          </div>
-        </div>
-      </section>
-
       <section class="settings-card" aria-label="${escapeHtml(t("settings.language"))}">
         <div class="settings-row">
           <div class="settings-row__text">
@@ -73,6 +61,43 @@ export function render(root, ctx) {
         </button>
       </section>
 
+      <section class="settings-card" aria-label="${escapeHtml(t("settings.brainstormTitle"))}">
+        <div class="settings-row">
+          <span class="settings-row__text">
+            <span class="settings-row__title">${escapeHtml(t("settings.brainstormTitle"))}</span>
+            <span class="settings-row__desc">
+              ${escapeHtml(t(brainstormConnected
+                ? "settings.brainstormConnectedHint"
+                : "settings.brainstormNotConnectedHint"))}
+            </span>
+          </span>
+          <span class="badge${brainstormConnected ? " badge--connected" : ""}">
+            ${escapeHtml(t(brainstormConnected
+              ? "settings.brainstormConnected"
+              : "settings.brainstormNotConnected"))}
+          </span>
+        </div>
+
+        <button class="settings-row settings-row--button" type="button" data-action="brainstorm">
+          <span class="settings-row__text">
+            <span class="settings-row__title">${escapeHtml(t("settings.openBrainstorm"))}</span>
+            <span class="settings-row__desc">${escapeHtml(t("settings.openBrainstormHint"))}</span>
+          </span>
+          <span class="settings-row__control" aria-hidden="true">${icon("arrow-right")}</span>
+        </button>
+
+        ${brainstormConnected ? `
+          <button class="settings-row settings-row--button settings-row--danger"
+            type="button" data-action="disconnect-brainstorm">
+            <span class="settings-row__text">
+              <span class="settings-row__title">${escapeHtml(t("settings.disconnectBrainstorm"))}</span>
+              <span class="settings-row__desc">${escapeHtml(t("settings.disconnectBrainstormHint"))}</span>
+            </span>
+            <span class="settings-row__control" aria-hidden="true">${icon("arrow-right")}</span>
+          </button>
+        ` : ""}
+      </section>
+
       <section class="settings-card" aria-label="${escapeHtml(t("settings.importTitle"))}">
         <button class="settings-row settings-row--button" type="button" data-action="import">
           <span class="settings-row__text">
@@ -93,17 +118,6 @@ export function render(root, ctx) {
         </button>
       </section>
 
-      <section class="settings-card" aria-label="${escapeHtml(t("settings.signOut"))}">
-        <button class="settings-row settings-row--button settings-row--danger"
-          type="button" data-action="sign-out">
-          <span class="settings-row__text">
-            <span class="settings-row__title">${escapeHtml(t("settings.signOut"))}</span>
-            <span class="settings-row__desc">${escapeHtml(t("settings.signOutHint"))}</span>
-          </span>
-          <span class="settings-row__control" aria-hidden="true">${icon("arrow-right")}</span>
-        </button>
-      </section>
-      
       <section class="settings-card" aria-label="${escapeHtml(t("settings.about"))}">
         <div class="settings-row">
           <div class="settings-row__text">
@@ -130,47 +144,32 @@ export function render(root, ctx) {
       ctx.showTutorial();
     } else if (action === "manual") {
       openManual();
+    } else if (action === "brainstorm") {
+      ctx.navigate("brainstorm");
+    } else if (action === "disconnect-brainstorm") {
+      handleDisconnectBrainstorm(ctx);
     } else if (action === "export") {
       handleExport();
     } else if (action === "import") {
       handleImport();
-    } else if (action === "sign-out") {
-      handleSignOut(ctx);
     }
   });
 }
 
-function openManual() {
-  const wrapper = document.createElement("div");
-  wrapper.className = "manual";
-  wrapper.innerHTML = `
-    <div class="manual__bar">
-      <h2 class="manual__title">${escapeHtml(t("manual.title"))}</h2>
-      <button class="icon-button" type="button" data-manual-close
-              aria-label="${escapeHtml(t("common.close"))}">
-        ${icon("close")}
-      </button>
-    </div>
-    ${getManual().map((section) => `
-      <section class="manual__section">
-        <h2>${escapeHtml(t(section.title))}</h2>
-        <p>${escapeHtml(t(section.body))}</p>
-      </section>
-    `).join("")}
-    <p class="manual__meta">${escapeHtml(t("manual.version"))}</p>
-  `;
-
-  const modal = openModal({
-    title: "",
-    body: wrapper,
-    actions: []
+async function handleDisconnectBrainstorm(ctx) {
+  const confirmed = await confirmDialog({
+    title: t("settings.disconnectBrainstormTitle"),
+    message: t("settings.disconnectBrainstormText"),
+    confirmLabel: t("settings.disconnectBrainstorm"),
+    cancelLabel: t("common.cancel"),
+    danger: true
   });
 
-  modal.modal?.removeAttribute("aria-labelledby");
-  modal.modal?.setAttribute("aria-label", t("manual.title"));
+  if (!confirmed) return;
 
-  wrapper.querySelector("[data-manual-close]")
-    .addEventListener("click", () => modal.close());
+  clearConnectionCode();
+  toast(t("settings.brainstormDisconnected"));
+  ctx.rerender();
 }
 
 function handleExport() {
@@ -215,18 +214,4 @@ function handleImport() {
   });
 
   input.click();
-}
-
-async function handleSignOut(ctx) {
-  const confirmed = await confirmDialog({
-    title: t("settings.signOutTitle"),
-    message: t("settings.signOutText"),
-    confirmLabel: t("settings.signOut"),
-    cancelLabel: t("settings.staySignedIn"),
-    danger: true
-  });
-
-  if (!confirmed) return;
-
-  await ctx.signOut();
 }

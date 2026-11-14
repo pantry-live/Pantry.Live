@@ -1,10 +1,11 @@
 /*
  * Pantry — application state and persistence.
  *
- * Drive is the source of truth. localStorage keeps a cache so the app can
- * show recipes instantly and keep working for a while when the network is
- * unavailable. Saves are debounced and retried on the next change or when
- * the browser comes back online.
+ * Guest mode is stored in localStorage. In Drive mode, Drive is the source of
+ * truth and localStorage keeps a cache so the app can show recipes instantly
+ * and keep working for a while when the network is unavailable. Drive saves
+ * are debounced and retried on the next change or when the browser comes back
+ * online.
  */
 
 import * as drive from "./drive.js";
@@ -19,6 +20,7 @@ import {
 const DATA_VERSION = 1;
 const SAVE_DELAY = 600;
 const CACHE_PREFIX = "pantry.cache.v1.";
+const GUEST_KEY = "pantry.guest.v1";
 
 let state = null;
 let saveTimer = null;
@@ -160,13 +162,80 @@ function clearCache(sub) {
   }
 }
 
+function readGuest() {
+  try {
+    const raw = localStorage.getItem(GUEST_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function writeGuest(data) {
+  try {
+    localStorage.setItem(GUEST_KEY, JSON.stringify(data));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function clearGuest() {
+  try {
+    localStorage.removeItem(GUEST_KEY);
+  } catch {
+    /* Ignore. */
+  }
+}
+
 /* ------------------------------ Loading -------------------------------- */
 
+function cancelPendingSave() {
+  if (saveTimer) {
+    window.clearTimeout(saveTimer);
+    saveTimer = null;
+  }
+}
+
+function initGuest(detectedLanguage = "en") {
+  const stored = readGuest();
+  const data = normalizeData(stored, detectedLanguage);
+  let needsWrite = !stored;
+
+  if (!data.settings.languageConfirmed) {
+    data.settings.language = normalizeLanguage(detectedLanguage || data.settings.language);
+  }
+
+  if (data.categories.length === 0) {
+    data.categories = defaultCategories(data.settings.language);
+    needsWrite = true;
+  }
+
+  state = {
+    data,
+    fileId: null,
+    profileSub: "",
+    mode: "guest",
+    offline: false,
+    dirty: false,
+    lastError: null
+  };
+
+  applyLanguage(data.settings.language);
+  if (needsWrite) writeGuest(data);
+  emit({ type: "loaded", offline: false, error: null, mode: "guest" });
+
+  return { data, offline: false, error: null };
+}
+
 /**
- * Load Drive data, reconcile with the local cache, and install the state.
- * Throws only when there is neither Drive data nor a usable cache.
+ * Load Drive data and reconcile it with the local cache. Returns the result
+ * without installing it, so a failed sign-in can leave guest mode untouched.
  */
-export async function init({ profile, detectedLanguage = "en" } = {}) {
+async function loadDriveData(profile, detectedLanguage = "en") {
   const sub = profile?.sub || "";
   const cached = readCache(sub);
   const config = getConfig();
@@ -231,22 +300,151 @@ export async function init({ profile, detectedLanguage = "en" } = {}) {
     needsPush = true;
   }
 
+  return { data, fileId, offline, needsPush, loadError, sub };
+}
+
+async function initDrive(profile, detectedLanguage = "en") {
+  const result = await loadDriveData(profile, detectedLanguage);
+
   state = {
-    data,
-    fileId,
-    profileSub: sub,
-    offline,
+    data: result.data,
+    fileId: result.fileId,
+    profileSub: result.sub,
+    mode: "drive",
+    offline: result.offline,
     dirty: false,
-    lastError: loadError
+    lastError: result.loadError
   };
 
-  applyLanguage(data.settings.language);
-  writeCache(sub, data);
-  emit({ type: "loaded", offline, error: loadError });
+  applyLanguage(result.data.settings.language);
+  writeCache(result.sub, result.data);
+  emit({ type: "loaded", offline: result.offline, error: result.loadError, mode: "drive" });
 
-  if (needsPush) scheduleSave(true);
+  if (result.needsPush) scheduleSave(true);
 
-  return { data, offline, error: loadError };
+  return { data: result.data, offline: result.offline, error: result.loadError };
+}
+
+/** Merge guest data into Drive data without replacing any Drive recipes. */
+function mergeData(driveData, guestData) {
+  const merged = {
+    version: DATA_VERSION,
+    recipes: driveData.recipes.map((recipe) => ({ ...recipe })),
+    categories: [...driveData.categories],
+    subcategories: {},
+    settings: { ...driveData.settings },
+    updatedAt: new Date().toISOString()
+  };
+
+  for (const [category, names] of Object.entries(driveData.subcategories || {})) {
+    merged.subcategories[category] = [...names];
+  }
+
+  const ids = new Set(merged.recipes.map((recipe) => recipe.id));
+  const titles = new Set(merged.recipes.map((recipe) => recipe.title.toLowerCase()));
+
+  for (const recipe of guestData.recipes) {
+    const title = recipe.title.toLowerCase();
+    if (ids.has(recipe.id) || titles.has(title)) continue;
+    merged.recipes.push({ ...recipe });
+    ids.add(recipe.id);
+    titles.add(title);
+  }
+
+  const categoryByKey = new Map(
+    merged.categories.map((category) => [category.toLowerCase(), category])
+  );
+
+  const ensureCategory = (name) => {
+    const value = String(name || "").trim();
+    if (!value) return "";
+    const key = value.toLowerCase();
+    const existing = categoryByKey.get(key);
+    if (existing) return existing;
+    merged.categories.push(value);
+    categoryByKey.set(key, value);
+    return value;
+  };
+
+  for (const recipe of merged.recipes) {
+    const category = ensureCategory(recipe.category);
+    if (category) recipe.category = category;
+  }
+  for (const category of guestData.categories) {
+    ensureCategory(category);
+  }
+
+  for (const [guestCategory, names] of Object.entries(guestData.subcategories || {})) {
+    const target = ensureCategory(guestCategory);
+    if (!target) continue;
+
+    const existing = merged.subcategories[target] || [];
+    const seen = new Set(existing.map((name) => name.toLowerCase()));
+
+    for (const name of names) {
+      const value = String(name || "").trim();
+      if (!value || seen.has(value.toLowerCase())) continue;
+      existing.push(value);
+      seen.add(value.toLowerCase());
+    }
+
+    if (existing.length) merged.subcategories[target] = existing;
+  }
+
+  return merged;
+}
+
+/**
+ * Sign in to Drive. Guest recipes, categories, and subcategories are merged
+ * into the Drive data first. The guest copy is cleared only after the merged
+ * data has been saved successfully.
+ */
+export async function login(profile) {
+  if (!profile) throw new Error("Profile is required.");
+
+  if (state?.mode === "drive") {
+    return { data: state.data, saved: true, merged: false };
+  }
+
+  cancelPendingSave();
+
+  const guestSource = state?.mode === "guest"
+    ? JSON.parse(JSON.stringify(state.data))
+    : readGuest();
+
+  if (state?.mode === "guest") writeGuest(state.data);
+
+  const detectedLanguage = guestSource?.settings?.language || "en";
+  const guestData = normalizeData(guestSource, detectedLanguage);
+  const result = await loadDriveData(profile, detectedLanguage);
+  const merged = mergeData(result.data, guestData);
+
+  state = {
+    data: merged,
+    fileId: result.fileId,
+    profileSub: result.sub,
+    mode: "drive",
+    offline: result.offline,
+    dirty: true,
+    lastError: result.loadError
+  };
+
+  applyLanguage(merged.settings.language);
+  writeCache(result.sub, merged);
+  emit({ type: "loaded", offline: result.offline, error: result.loadError, mode: "drive" });
+
+  const saved = await runSave();
+  if (saved) clearGuest();
+
+  return { data: merged, saved, merged: true, offline: state?.offline };
+}
+
+/**
+ * Load local guest data, or Drive data when a profile is supplied.
+ * Throws only when Drive has neither data nor a usable cache.
+ */
+export async function init({ profile, detectedLanguage = "en" } = {}) {
+  return profile ? initDrive(profile, detectedLanguage) : initGuest(detectedLanguage);
 }
 
 /* ------------------------------ Getters -------------------------------- */
@@ -283,13 +481,18 @@ export function getProfileSub() {
   return state?.profileSub || "";
 }
 
+export function getMode() {
+  return state?.mode || "guest";
+}
+
 /* ----------------------------- Mutations ------------------------------- */
 
 function touch() {
   if (!state) return;
   state.data.updatedAt = new Date().toISOString();
   state.dirty = true;
-  writeCache(state.profileSub, state.data);
+  if (state.mode === "guest") writeGuest(state.data);
+  else writeCache(state.profileSub, state.data);
   scheduleSave(false);
 }
 
@@ -565,18 +768,32 @@ function scheduleSave(immediate = false) {
   }, SAVE_DELAY);
 }
 
-function runSave() {
-  if (!state) return Promise.resolve(true);
+async function runSave() {
+  if (!state) return true;
   if (currentSave) return currentSave;
-  if (!state.dirty) return Promise.resolve(true);
+  if (!state.dirty) return true;
+
+  const snapshot = JSON.parse(JSON.stringify(state.data));
+  state.dirty = false;
+
+  if (state.mode === "guest") {
+    const saved = writeGuest(snapshot);
+    if (!saved) {
+      state.dirty = true;
+      state.lastError = new Error("Could not save local data.");
+      emit({ type: "save-error", error: state.lastError });
+      return false;
+    }
+    state.lastError = null;
+    emit({ type: "saved" });
+    return true;
+  }
 
   const config = getConfig();
 
   currentSave = (async () => {
     if (!state) return true;
 
-    const snapshot = JSON.parse(JSON.stringify(state.data));
-    state.dirty = false;
     let success = false;
 
     try {
@@ -633,12 +850,9 @@ export function retrySave() {
   if (state?.dirty) scheduleSave(true);
 }
 
-/** Clear in-memory state and the current account's local cache. */
+/** Clear in-memory state and the current account's Drive cache. Guest data is kept. */
 export function destroy() {
-  if (saveTimer) {
-    window.clearTimeout(saveTimer);
-    saveTimer = null;
-  }
-  if (state?.profileSub) clearCache(state.profileSub);
+  cancelPendingSave();
+  if (state?.mode === "drive" && state.profileSub) clearCache(state.profileSub);
   state = null;
 }

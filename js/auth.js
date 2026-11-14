@@ -228,6 +228,15 @@ export async function signIn() {
   return signInPromise;
 }
 
+/**
+ * Restore a saved token synchronously, before Google Identity Services loads.
+ * This lets the splash screen honour an existing session without a login.
+ */
+export function restoreExistingSession() {
+  if (!accessToken) restoreSession();
+  return getSession();
+}
+
 export function getSession() {
   if (!accessToken || !expiresAt || Date.now() >= expiresAt) return null;
   return { accessToken, expiresAt, profile };

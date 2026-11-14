@@ -9,6 +9,7 @@ import * as cookingView from "./views/cooking.js";
 import * as shoppingView from "./views/shopping.js";
 import * as brainstormView from "./views/brainstorm.js";
 import * as settingsView from "./views/settings.js";
+import * as profileView from "./views/profile.js";
 import { runOnboarding, showTutorial } from "./onboarding.js";
 import { detectLanguage, setLanguage, t } from "./i18n.js";
 import { escapeHtml, icon, openModal, confirmDialog, toast } from "./ui.js";
@@ -32,6 +33,7 @@ const elements = {
   view: document.getElementById("view"),
   headerBack: document.getElementById("header-back"),
   settingsButton: document.getElementById("open-settings"),
+  profileButton: document.getElementById("open-profile"),
   tabbar: document.querySelector(".tabbar"),
   tabButtons: [...document.querySelectorAll("[data-tab]")]
 };
@@ -40,7 +42,6 @@ let currentTab = "cooking";
 let currentScreen = "tab";
 let activeCleanup = null;
 let backHandler = null;
-let authReady = false;
 let busy = false;
 let reauthOpen = false;
 let offlineNotified = false;
@@ -51,6 +52,7 @@ const ctx = {
     showTab(tab);
   },
   openSettings,
+  openProfile,
   closeSettings() {
     showTab(currentTab);
   },
@@ -91,42 +93,19 @@ function applySplashLabels() {
     elements.splashPrivacyBody.textContent = t("splash.privacyBody");
   }
   if (elements.splashPrivacy) elements.splashPrivacy.hidden = false;
-  elements.splashButton?.setAttribute("aria-label", t("splash.signIn"));
+  elements.splashButton?.setAttribute("aria-label", t("splash.tapToStart"));
 }
 
 function resetSplashHint() {
   setSplashHint(auth.hasSession() ? t("splash.tapToContinue") : t("splash.tapToStart"));
 }
 
+/** Load Google Identity Services in the background. Guest mode never waits for it. */
 async function prepareAuth() {
-  authReady = false;
-  setSplashDisabled(true);
-
   try {
-    const ready = await auth.init();
-
-    if (!ready) {
-      setSplashWarning(t("splash.configMissing"));
-      setSplashHint(t("splash.retry"));
-      setSplashDisabled(false);
-      return false;
-    }
-
-    authReady = true;
-    setSplashWarning("");
-    resetSplashHint();
-    setSplashDisabled(false);
-    return true;
-  } catch (error) {
-    authReady = false;
-    setSplashWarning(
-      error?.code === "gis_unavailable"
-        ? t("splash.gisUnavailable")
-        : t("errors.authUnavailable")
-    );
-    setSplashHint(t("splash.retry"));
-    setSplashDisabled(false);
-    return false;
+    await auth.init();
+  } catch {
+    /* Sign-in reports its own error from Profile. */
   }
 }
 
@@ -152,22 +131,8 @@ async function handleSplashClick() {
   setSplashWarning("");
 
   try {
-    if (!authReady && !(await prepareAuth())) {
-      return;
-    }
-
-    if (!auth.hasValidConfig()) {
-      setSplashWarning(t("splash.configMissing"));
-      return;
-    }
-
-    if (!auth.hasSession()) {
-      setSplashHint(t("splash.signingIn"));
-      const session = await auth.signIn();
-      if (!(await openApp(session.profile))) return;
-    } else if (!(await openApp(auth.getProfile()))) {
-      return;
-    }
+    const session = auth.restoreExistingSession();
+    if (!(await openApp(session?.profile || null))) return;
   } catch (error) {
     console.error(error);
     setSplashWarning(splashErrorMessage(error));
@@ -186,11 +151,11 @@ async function openApp(profile) {
   setSplashHint(t("splash.loadingRecipes"));
   setSplashDisabled(true);
 
-  const detectedLanguage = detectLanguage(profile?.locale || auth.getLocale());
   const detectedLocale = profile?.locale || auth.getLocale();
+  const detectedLanguage = detectLanguage(detectedLocale);
 
   try {
-    drive.resetCache();
+    if (profile) drive.resetCache();
     await store.init({ profile, detectedLanguage });
   } catch (error) {
     console.error(error);
@@ -204,7 +169,9 @@ async function openApp(profile) {
       ? t("errors.sessionExpired")
       : error?.code === "invalid_json"
         ? t("errors.storageCorrupt")
-        : t("errors.driveLoad");
+        : profile
+          ? t("errors.driveLoad")
+          : t("errors.unknownError");
 
     setSplashWarning(message);
     setSplashHint(t("splash.retry"));
@@ -271,6 +238,15 @@ function openSettings() {
   applyChrome();
 }
 
+function openProfile() {
+  if (!store.getData()) return;
+
+  currentScreen = "profile";
+  mountCurrent();
+  updateActiveTab();
+  applyChrome();
+}
+
 function mountCurrent() {
   if (!elements.view) return;
 
@@ -290,7 +266,11 @@ function mountCurrent() {
   content.className = "page";
   elements.view.append(content);
 
-  const module = currentScreen === "settings" ? settingsView : VIEWS[currentTab];
+  const module = currentScreen === "settings"
+    ? settingsView
+    : currentScreen === "profile"
+      ? profileView
+      : VIEWS[currentTab];
 
   try {
     activeCleanup = module.render(content, ctx) || null;
@@ -314,13 +294,18 @@ function applyChrome() {
 
   elements.tabbar?.setAttribute("aria-label", t("nav.main"));
   elements.settingsButton?.setAttribute("aria-label", t("nav.settings"));
+  elements.profileButton?.setAttribute("aria-label", t("nav.profile"));
   elements.headerBack?.setAttribute("aria-label", t("common.back"));
   applySplashLabels();
 
   if (elements.app?.hidden) {
     document.title = "Pantry";
   } else {
-    const label = currentScreen === "settings" ? t("nav.settings") : t(`nav.${currentTab}`);
+    const label = currentScreen === "settings"
+      ? t("nav.settings")
+      : currentScreen === "profile"
+        ? t("nav.profile")
+        : t(`nav.${currentTab}`);
     document.title = `${label} · Pantry`;
   }
 }
@@ -361,6 +346,14 @@ function handleStoreEvent(event) {
 
   if (event.type === "save-error") {
     updateOfflineBanner();
+
+    if (store.getMode() === "guest") {
+      if (!offlineNotified) {
+        offlineNotified = true;
+        toast(t("errors.localSave"), "error");
+      }
+      return;
+    }
 
     if (!offlineNotified) {
       offlineNotified = true;
@@ -453,15 +446,19 @@ async function performSignOut() {
     await releaseWakeLock();
 
     setBackHandler(null);
-    elements.view.innerHTML = "";
-    elements.app.hidden = true;
-    elements.splash.hidden = false;
     offlineNotified = false;
+    setSplashWarning("");
+
+    const opened = await openApp(null);
+    if (!opened) {
+      elements.view.innerHTML = "";
+      elements.app.hidden = true;
+      elements.splash.hidden = false;
+      setSplashHint(t("splash.tapToStart"));
+      setSplashDisabled(false);
+    }
 
     applyChrome();
-    setSplashWarning("");
-    setSplashHint(t("splash.tapToStart"));
-    setSplashDisabled(false);
     toast(t("settings.signedOut"));
   } catch (error) {
     console.error(error);
@@ -482,6 +479,7 @@ function bindEvents() {
   });
 
   elements.settingsButton?.addEventListener("click", openSettings);
+  elements.profileButton?.addEventListener("click", openProfile);
 
   for (const button of elements.tabButtons) {
     button.addEventListener("click", () => showTab(button.dataset.tab));
@@ -503,8 +501,10 @@ async function boot() {
   setLanguage(detectLanguage(navigator.language));
   applyChrome();
   setSplashHint(t("splash.tapToStart"));
+  setSplashWarning("");
+  setSplashDisabled(false);
   bindEvents();
-  await prepareAuth();
+  prepareAuth();
 }
 
 boot();
