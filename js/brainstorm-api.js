@@ -9,7 +9,7 @@ import { getLanguageMeta, t } from "./i18n.js";
 import { getAiIdToken } from "./ai-auth.js";
 
 // Replace YOUR-SUBDOMAIN with the address printed by `npx wrangler deploy`.
-const WORKER_URL = "https://pantry-live-proxy.YOUR-SUBDOMAIN.workers.dev";
+const WORKER_URL = "https://pantry-live-proxy.pantry-live.workers.dev";
 const REQUEST_TIMEOUT_MS = 30000;
 const RECIPE_FIELDS = ["title", "category", "subcategory", "ingredients", "steps"];
 
