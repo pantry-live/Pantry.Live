@@ -17,6 +17,7 @@ import * as store from "../store.js";
 
 let activeController = null;
 let mountedRoot = null;
+let wizardDraft = null; // { step, answers, mode } while the wizard is open
 let pendingResult = null;
 
 // Re-draw when the user signs in or out for AI.
@@ -36,6 +37,8 @@ export function render(root) {
     renderLoading(root, activeController);
   } else if (pendingResult) {
     renderResult(root, pendingResult.answers, pendingResult.recipe);
+  } else if (wizardDraft) {
+    openWizard(root, wizardDraft.answers, wizardDraft.mode, wizardDraft.step);
   } else {
     renderReady(root);
   }
@@ -49,6 +52,7 @@ function renderHome(root) {
 }
 
 function renderModeChoice(root) {
+  wizardDraft = null;
   root.innerHTML = `
     <div class="page-header">
       <h1 class="page-title">${escapeHtml(t("brainstorm.title"))}</h1>
@@ -89,6 +93,7 @@ function renderModeChoice(root) {
 }
 
 function renderReady(root) {
+  wizardDraft = null;
   root.innerHTML = `
     <div class="page-header">
       <h1 class="page-title">${escapeHtml(t("brainstorm.title"))}</h1>
@@ -1164,9 +1169,9 @@ function savePromptRecipe(root, answers, button) {
   renderHome(root);
 }
 
-function openWizard(root, initialAnswers, mode = "api") {
+function openWizard(root, initialAnswers, mode = "api", initialStep = 1) {
   const answers = createAnswers(initialAnswers);
-  let step = 1;
+  let step = initialStep;
 
   const goNext = () => {
     if (!isStepValid(step, answers) || step >= TOTAL_STEPS) return;
@@ -1184,6 +1189,7 @@ function openWizard(root, initialAnswers, mode = "api") {
   };
 
   function paint() {
+    wizardDraft = { step, answers, mode };
     const isSummary = step === TOTAL_STEPS;
 
     root.innerHTML = `
