@@ -3,7 +3,12 @@ const GEMINI_ENDPOINT =
   "https://generativelanguage.googleapis.com/v1beta/models/" + GEMINI_MODEL + ":generateContent";
 const DAILY_LIMIT = 3;
 const MAX_PROMPT_CHARS = 20000;
-const ALLOWED_ORIGINS = ["https://pantry-live.github.io", "http://localhost:8000"];
+const ALLOWED_ORIGINS = [
+  "https://pantry-live.github.io",
+  "http://localhost:8000",
+  "http://127.0.0.1:5500",
+  "http://localhost:5500"
+];
 const RECIPE_FIELDS = ["title", "category", "subcategory", "ingredients", "steps"];
 
 const RESPONSE_SCHEMA = {
