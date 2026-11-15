@@ -87,6 +87,7 @@ export async function renderAiSignIn(container) {
     size: "large",
     text: "signin_with",
     shape: "pill",
+    width: 280,
     locale: getLanguage()
   });
   return true;

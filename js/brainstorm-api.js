@@ -1,32 +1,17 @@
 /*
- * Pantry — Brainstorm connection storage and Gemini requests.
+ * Pantry: Brainstorm recipe requests.
  *
- * The connection code is kept in its own localStorage key so it is not part of
- * the exported recipe data. Requests send the code only in a request header.
+ * The browser builds the prompt. The Worker holds the Gemini key and checks
+ * the user's sign-in. The sign-in token travels only in the Authorization header.
  */
 
 import { getLanguageMeta, t } from "./i18n.js";
+import { getAiIdToken } from "./ai-auth.js";
 
-const STORAGE_KEY = "pantry_gemini_api_key";
-
-export const GEMINI_MODEL = "gemini-3.5-flash-lite";
-const GEMINI_ENDPOINT =
-  `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
+// Replace YOUR-SUBDOMAIN with the address printed by `npx wrangler deploy`.
+const WORKER_URL = "https://pantry-live-proxy.YOUR-SUBDOMAIN.workers.dev";
 const REQUEST_TIMEOUT_MS = 30000;
 const RECIPE_FIELDS = ["title", "category", "subcategory", "ingredients", "steps"];
-
-const RESPONSE_SCHEMA = {
-  type: "OBJECT",
-  properties: {
-    title: { type: "STRING" },
-    category: { type: "STRING" },
-    subcategory: { type: "STRING" },
-    ingredients: { type: "STRING" },
-    steps: { type: "STRING" }
-  },
-  required: RECIPE_FIELDS,
-  propertyOrdering: RECIPE_FIELDS
-};
 
 export class BrainstormError extends Error {
   constructor(code, details = {}) {
@@ -39,54 +24,19 @@ export class BrainstormError extends Error {
   }
 }
 
-function getStorage() {
-  try {
-    return globalThis.localStorage || null;
-  } catch {
-    return null;
-  }
-}
-
-export function getConnectionCode() {
-  const storage = getStorage();
-  if (!storage) return "";
-
-  try {
-    return String(storage.getItem(STORAGE_KEY) || "").trim();
-  } catch {
-    return "";
-  }
-}
-
+/** True when the user is signed in for built-in AI. */
 export function hasConnection() {
-  return Boolean(getConnectionCode());
+  return Boolean(getAiIdToken());
 }
 
-export function saveConnectionCode(code) {
-  const value = String(code || "").trim();
-  if (!value) return false;
-
-  const storage = getStorage();
-  if (!storage) return false;
-
-  try {
-    storage.setItem(STORAGE_KEY, value);
-    return true;
-  } catch {
-    return false;
-  }
+/** Kept only so the old setup code still loads. Keys are no longer stored. */
+export function saveConnectionCode() {
+  return false;
 }
 
+/** Kept only so sign-out still loads. Nothing is stored any more. */
 export function clearConnectionCode() {
-  const storage = getStorage();
-  if (!storage) return false;
-
-  try {
-    storage.removeItem(STORAGE_KEY);
-    return true;
-  } catch {
-    return false;
-  }
+  return true;
 }
 
 /* ---------------------------- Prompt builder ----------------------------- */
@@ -312,12 +262,12 @@ function parseRecipe(text) {
 }
 
 /**
- * Request one recipe from Gemini. The connection code travels only in the
- * x-goog-api-key header. `signal` lets the caller discard a pending request.
+ * Request one recipe through the Worker. The sign-in token travels only in
+ * the Authorization header. `signal` lets the caller discard a pending request.
  */
 export async function generateRecipe(answers, categories, { signal } = {}) {
-  const key = getConnectionCode();
-  if (!key) throw new BrainstormError("invalidKey");
+  const token = getAiIdToken();
+  if (!token) throw new BrainstormError("invalidKey");
 
   const controller = new AbortController();
   let timedOut = false;
@@ -336,24 +286,14 @@ export async function generateRecipe(answers, categories, { signal } = {}) {
   }
 
   try {
-    const response = await fetch(GEMINI_ENDPOINT, {
+    const response = await fetch(WORKER_URL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-goog-api-key": key
+        "Authorization": "Bearer " + token
       },
       body: JSON.stringify({
-        contents: [
-          {
-            role: "user",
-            parts: [{ text: buildRecipePrompt(answers, categories) }]
-          }
-        ],
-        generationConfig: {
-          responseMimeType: "application/json",
-          responseSchema: RESPONSE_SCHEMA,
-          temperature: 0.7
-        }
+        prompt: buildRecipePrompt(answers, categories)
       }),
       signal: controller.signal
     });
