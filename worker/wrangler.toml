@@ -1,0 +1,11 @@
+account_id = "5e33a47ebb75f4a6d72c19102673cfdc" 
+name = "pantry-live-proxy"
+main = "src/index.js"
+compatibility_date = "2026-01-01"
+
+[[kv_namespaces]]
+binding = "PANTRY_KV"
+id = "58ff3d1f6da44da2ad03994627d324e6"
+
+[vars]
+GOOGLE_CLIENT_ID = "931539024578-ff9n1a77fceu5vgg7agesbpsr2bfeits.apps.googleusercontent.com"

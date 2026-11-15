@@ -1,9 +1,9 @@
 /*
- * Pantry — Brainstorm tab view.
+ * Pantry: Brainstorm tab view.
  *
- * With an API key, the wizard generates a recipe directly. Without one, it
- * builds a prompt to copy into an AI chat and parses the reply that is pasted
- * back.
+ * Built-in AI: the user signs in with Google and the Worker generates the
+ * recipe. Without AI, the wizard builds a prompt to copy into an AI chat and
+ * parses the reply that is pasted back.
  */
 
 import { getLanguageMeta, t } from "../i18n.js";
@@ -11,21 +11,23 @@ import { escapeHtml, icon, openModal, toast } from "../ui.js";
 import { openManual } from "../manual.js";
 import { parseRecipeText } from "../importer.js";
 import { buildChatPrompt, stripCodeFences } from "../brainstorm-prompt.js";
-import {
-  generateRecipe,
-  hasConnection,
-  saveConnectionCode
-} from "../brainstorm-api.js";
+import { generateRecipe } from "../brainstorm-api.js";
+import { hasAiSession, onAiSessionChange, renderAiSignIn } from "../ai-auth.js";
 import * as store from "../store.js";
 
 let activeController = null;
 let mountedRoot = null;
 let pendingResult = null;
 
+// Re-draw when the user signs in or out for AI.
+onAiSessionChange(() => {
+  if (mountedRoot && !activeController) render(mountedRoot);
+});
+
 export function render(root) {
   mountedRoot = root;
 
-  if (!hasConnection()) {
+  if (!hasAiSession()) {
     renderModeChoice(root);
     return;
   }
@@ -42,7 +44,7 @@ export function render(root) {
 /* ------------------------------- Ready ---------------------------------- */
 
 function renderHome(root) {
-  if (!hasConnection()) renderModeChoice(root);
+  if (!hasAiSession()) renderModeChoice(root);
   else renderReady(root);
 }
 
@@ -55,15 +57,13 @@ function renderModeChoice(root) {
     <section class="brainstorm-card">
       <div class="brainstorm-card__icon" aria-hidden="true">${icon("bulb")}</div>
       <div class="brainstorm-card__body">
-        <h2 class="brainstorm-card__title">${escapeHtml(t("brainstorm.readyTitle"))}</h2>
-        <p class="brainstorm-card__text">${escapeHtml(t("brainstorm.modeText"))}</p>
+        <h2 class="brainstorm-card__title">${escapeHtml(t("brainstorm.builtInAiBtn"))}</h2>
+        <p class="brainstorm-card__text">${escapeHtml(t("brainstorm.builtInAiHint"))}</p>
 
         <div class="brainstorm-actions">
-          <button class="button" type="button" data-action="prompt">
+          <div data-ref="ai-signin"></div>
+          <button class="button button--secondary" type="button" data-action="prompt">
             ${escapeHtml(t("brainstorm.useOwnChatBtn"))}
-          </button>
-          <button class="button button--secondary" type="button" data-action="setup">
-            ${escapeHtml(t("brainstorm.connectKeyBtn"))}
           </button>
         </div>
 
@@ -74,12 +74,13 @@ function renderModeChoice(root) {
     </section>
   `;
 
-  root.querySelector('[data-action="prompt"]')?.addEventListener("click", () => {
-    openWizard(root, undefined, "prompt");
+  const signInSlot = root.querySelector('[data-ref="ai-signin"]');
+  renderAiSignIn(signInSlot).catch(() => {
+    if (signInSlot) signInSlot.hidden = true;
   });
 
-  root.querySelector('[data-action="setup"]')?.addEventListener("click", () => {
-    openSetup(root);
+  root.querySelector('[data-action="prompt"]')?.addEventListener("click", () => {
+    openWizard(root, undefined, "prompt");
   });
 
   root.querySelector('[data-action="manual"]')?.addEventListener("click", () => {

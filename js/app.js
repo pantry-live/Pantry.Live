@@ -15,6 +15,8 @@ import { detectLanguage, setLanguage, t } from "./i18n.js";
 import { escapeHtml, icon, openModal, confirmDialog, toast } from "./ui.js";
 import { releaseWakeLock } from "./wakelock.js";
 
+localStorage.removeItem("pantry_gemini_api_key");
+
 const VIEWS = {
   cooking: cookingView,
   shopping: shoppingView,
