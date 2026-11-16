@@ -285,7 +285,7 @@ function renderQuestion(step, answers) {
         <p class="brainstorm-card__text">${escapeHtml(t(textKey))}</p>
         <label class="field">
           <span class="field__label">${escapeHtml(t(labelKey))}</span>
-          <input class="input" type="text" data-ref="answer" autocomplete="off"
+          <input class="input" type="text" data-ref="answer" max-length="800" autocomplete="off"
             spellcheck="false" value="${escapeHtml(answers[field])}"
             placeholder="${escapeHtml(t(placeholderKey))}"
             aria-label="${escapeHtml(t(titleKey))}">
@@ -311,7 +311,7 @@ function renderQuestion(step, answers) {
         </div>
         <label class="field">
           <span class="field__label">${escapeHtml(t("brainstorm.restrictionsOtherLabel"))}</span>
-          <input class="input" type="text" data-ref="restrictionsOther" autocomplete="off"
+          <input class="input" type="text" data-ref="restrictionsOther" max-length="800" autocomplete="off"
             value="${escapeHtml(answers.restrictionsOther)}"
             placeholder="${escapeHtml(t("brainstorm.restrictionsOtherPlaceholder"))}">
         </label>
