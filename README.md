@@ -1,6 +1,6 @@
 # Pantry Live
 
-Pantry Live is a static recipe app with optional Google Drive sync. It has no backend, no build step, and no dependencies. It works immediately in local mode. Signing in is optional and lets you keep the same recipes in Google Drive.
+Pantry Live is a static recipe app with optional Google Drive sync. It has no build step and no dependencies. The only server-side code in this repo is a small Cloudflare Worker that relays built-in AI requests to Google. The rest of the app runs in the browser.
 
 The interface is available in **Dutch, English, and German**. On first start, Pantry detects the browser language, suggests it, and asks the user to confirm. The language can be changed later in Settings. Recipe text is never translated automatically.
 
@@ -19,6 +19,7 @@ The interface is available in **Dutch, English, and German**. On first start, Pa
 - Screen Wake Lock while a recipe is open (when supported).
 - Automatic light and dark theme.
 - Brainstorm: answer a few questions and either let a Google API key generate a recipe or copy a prompt into the AI chat of your choice and paste the reply back.
+- Brainstorm with built-in AI: sign in with Google and the request goes through the Pantry Worker to Gemini. Each tester is limited to 3 requests per day.
 - Shopping tab: a translated placeholder for now.
 
 ## Requirements
@@ -27,6 +28,7 @@ The interface is available in **Dutch, English, and German**. On first start, Pa
 - The app served over HTTP(S). Opening `index.html` directly from disk will not work because ES modules require an origin.
 - Optional: a Google OAuth Client ID for Drive sign-in.
 - Optional: a Google API key for direct recipe generation in Brainstorm.
+- Optional: built-in AI in Brainstorm, which needs the Pantry Worker deployed and your Google account on its tester list.
 
 Without a Google Client ID, local mode still works. Drive sign-in shows a configuration message, and Brainstorm can still use the copy-prompt flow.
 
@@ -42,7 +44,7 @@ Open <http://localhost:8002>.
 
 ## Configuration
 
-Edit `js/config.js`:
+Edit `js/config.js` in the repository root:
 
 ```js
 window.PANTRY_CONFIG = {
@@ -59,7 +61,7 @@ The app requests these scopes:
 - `openid profile` to read the account name and locale.
 - `drive.file` to create and update only files this app created.
 
-There is no refresh token and no backend. A session lasts about an hour; the app asks the user to re-authenticate when it expires.
+There is no refresh token. The only backend is the optional built-in AI Worker. A session lasts about an hour; the app asks the user to re-authenticate when it expires.
 
 ## Deploy to GitHub Pages
 
@@ -68,7 +70,8 @@ There is no refresh token and no backend. A session lasts about an hour; the app
 3. In the repository, open **Settings → Pages**.
 4. Deploy from the `main` branch and the repository root.
 5. Add the Pages URL to the OAuth client's authorized JavaScript origins.
-6. Open the Pages URL.
+6. If built-in AI should work on that URL, also add it to ALLOWED_ORIGINS in worker/src/index.js and redeploy the Worker.
+7. Open the Pages URL.
 
 No build or CI step is needed.
 
@@ -87,7 +90,7 @@ The Google session token is kept in `sessionStorage` under `pantry.session.v1`. 
 
 ```json
 {
-  "version": 1,
+  "version": 1.0,
   "recipes": [
     {
       "id": "uuid",
@@ -147,50 +150,62 @@ Steps:
 One ingredient or step per line. A recipe without a title cannot be saved.
 
 ## File overview
-
-```text
 .
+├── .gitignore
 ├── .nojekyll
+├── CNAME                      # custom domain for GitHub Pages (pantrycooking.app)
 ├── README.md
+├── config.js                  # Google OAuth Client ID and Drive file settings (loaded by index.html)
 ├── index.html                 # static shell, splash screen, icon sprite
 ├── css/
 │   └── styles.css             # design tokens, themes, layout, components
-└── js/
-    ├── app.js                 # bootstrap, splash, navigation, shared chrome
-    ├── auth.js                # Google Identity Services token flow
-    ├── brainstorm-api.js      # optional Google API key and recipe generation
-    ├── brainstorm-prompt.js   # builds the copy-prompt text for AI chats
-    ├── config.js              # Google OAuth Client ID and Drive file settings
-    ├── drive.js               # Google Drive file storage
-    ├── exchange.js            # recipe text format and export
-    ├── i18n.js                # Dutch/English/German strings and language helpers
-    ├── importer.js            # import and parsing of recipe text files and ZIP archives
-    ├── keywords.js            # keywords for sorting imported recipes
-    ├── manual.js              # shared user manual modal
-    ├── onboarding.js          # language confirmation, welcome, tutorial
-    ├── recipe.js              # ingredient scaling and search helpers
-    ├── speech.js              # Web Speech API wrapper
-    ├── store.js               # local/Drive state, merging, and persistence
-    ├── ui.js                  # modal, toast, icons, escaping helpers
-    ├── unzip.js               # minimal ZIP reader
-    ├── wakelock.js            # Screen Wake Lock helper
-    ├── zip.js                 # minimal ZIP writer
-    └── views/
-        ├── cooking.js         # recipe list, detail, form, categories, cooking mode
-        ├── shopping.js        # placeholder
-        ├── brainstorm.js      # questions, direct generation, prompt copy, paste, preview
-        ├── profile.js         # local mode, sign-in, sign-out
-        └── settings.js        # export, import, language, manual, Brainstorm connection
+├── icons/
+│   ├── pantry-icon-120.png    # Google Cloud OAuth logo
+│   ├── pantry-icon-180.png    # iPhone home screen (apple-touch-icon)
+│   ├── pantry-icon-192.png    # Android and web app manifest
+│   ├── pantry-icon-512.png    # Android and web app manifest (large)
+│   └── pantry-icon.svg        # master icon, edit this and re-export the PNGs
+├── js/
+│   ├── app.js                 # bootstrap, splash, navigation, shared chrome
+│   ├── ai-auth.js             # Google sign-in for built-in AI (ID token kept in memory only)
+│   ├── auth.js                # Google Identity Services token flow for Drive
+│   ├── brainstorm-api.js      # Google API key and built-in AI recipe requests
+│   ├── brainstorm-prompt.js   # builds the copy-prompt text for AI chats
+│   ├── drive.js               # Google Drive file storage
+│   ├── exchange.js            # recipe text format and export
+│   ├── i18n.js                # Dutch, English, and German strings and language helpers
+│   ├── importer.js            # import of recipe text files and ZIP archives
+│   ├── keywords.js            # keywords for sorting imported recipes
+│   ├── manual.js              # shared user manual modal
+│   ├── onboarding.js          # language confirmation, welcome, tutorial
+│   ├── recipe.js              # ingredient scaling and search helpers
+│   ├── speech.js              # Web Speech API wrapper
+│   ├── store.js               # local/Drive state, merging, and persistence
+│   ├── ui.js                  # modal, toast, icons, escaping helpers
+│   ├── unzip.js               # minimal ZIP reader
+│   ├── wakelock.js            # Screen Wake Lock helper
+│   ├── zip.js                 # minimal ZIP writer
+│   └── views/
+│       ├── brainstorm.js      # questions, direct generation, prompt copy, paste, preview
+│       ├── cooking.js         # recipe list, detail, form, categories, cooking mode
+│       ├── profile.js         # local mode, sign-in, sign-out
+│       ├── settings.js        # export, import, language, manual, Brainstorm connection
+│       └── shopping.js        # placeholder
+└── worker/
+    ├── wrangler.toml          # Cloudflare Worker configuration
+    └── src/
+        └── index.js           # built-in AI relay: checks sign-in and tester list, daily limit, forwards to Gemini
 ```
 
 ## Privacy and security
 
-- No backend, analytics, ads, or tracking by Pantry.
+- No analytics, ads, or tracking by Pantry.
 - Local mode keeps recipes, categories, and settings in the browser.
 - Drive mode stores the same data in a file the app owns in the user's Google Drive.
-- The OAuth token is kept in `sessionStorage`; the Brainstorm API key is kept separately in `localStorage`.
+- The OAuth token is kept in `sessionStorage`.
 - The app can only access Drive files it created with the `drive.file` scope.
-- Brainstorm sends data to Google only when the user has added an API key and explicitly asks for a recipe. The copy-prompt flow does not call Google from Pantry; an external AI chat handles that request under its own terms.
+- Brainstorm sends data to Google only when the user makes uses of the built in AI-feature. The copy-prompt flow does not call Google from Pantry; an external AI chat handles that request under its own terms (picked by the user).
+- Built-in AI sends the sign-in token and your Brainstorm prompt to the Pantry Worker. The Worker checks the tester list, counts daily requests per account email, and forwards the prompt to Google. Recipes are not sent.
 
 ## Limitations
 

@@ -4,8 +4,10 @@ const GEMINI_ENDPOINT =
 const DAILY_LIMIT = 3;
 const MAX_PROMPT_CHARS = 20000;
 const ALLOWED_ORIGINS = [
+  "https://pantrycooking.app",
   "https://pantry-live.github.io",
   "http://localhost:8000",
+  "http://localhost:8002",
   "http://127.0.0.1:5500",
   "http://localhost:5500"
 ];
