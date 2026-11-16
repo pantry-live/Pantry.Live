@@ -428,11 +428,11 @@ const STRINGS = {
     manual: {
       title: "Gebruikershandleiding",
       introTitle: "Wat is Pantry?",
-      introBody: "Pantry is een eenvoudige receptenapp zonder server. Je recepten zijn tekst alleen: titel, categorie, ingrediënten en bereidingswijze. Er zijn geen foto’s.",
+      introBody: "Pantry is een eenvoudige receptenapp. Je recepten zijn tekst alleen: titel, categorie, ingrediënten en bereidingswijze. Er zijn geen foto’s.",
       startTitle: "Beginnen en inloggen",
       startBody: "Tik op het startscherm om Pantry lokaal te gebruiken. Inloggen is optioneel. Open daarna Profiel via het chefshoedje rechtsboven om met Google in te loggen. De app gebruikt de drive.file-scope en mag alleen bestanden zien en bewerken die de app zelf heeft aangemaakt.",
       dataTitle: "Waar staan je recepten?",
-      dataBody: "Zonder login staan je recepten alleen in deze browser. Na inloggen worden ze bewaard in je eigen Google Drive, in de map Pantry App, in het bestand pantry-data.json. Bij het inloggen worden lokale recepten en categorieën samengevoegd met je Drive. Er is geen backend en er worden geen gegevens naar een andere server gestuurd.",
+      dataBody: "Zonder login staan je recepten alleen in deze browser. Na inloggen worden ze bewaard in je eigen Google Drive, in de map Pantry App, in het bestand pantry-data.json. Bij het inloggen worden lokale recepten en categorieën samengevoegd met je Drive. Ingebouwde AI in Brainstorm is de enige functie die een Pantry-server gebruikt: die stuurt je verzoek door naar Google.",
       recipesTitle: "Recepten beheren",
       recipesBody: "Gebruik de tab Koken om te zoeken op titel of ingrediënt, te filteren met categorieën en recepten toe te voegen. Tik op een recept om het te openen. Daar kun je het ook bewerken of verwijderen.",
       servingsTitle: "Porties",
@@ -447,8 +447,8 @@ const STRINGS = {
       shoppingBody: "Boodschappen is nog een placeholder. Later zie je hier per recept een boodschappenlijst die automatisch meeschaalt met het aantal porties.",
       brainstormTitle: "Brainstormen",
       brainstormBody: "Brainstorm helpt je een recept te maken met de AI-chat van je keuze. Je beantwoordt een paar vragen en kopieert daarna een kant-en-klare prompt. Plak die prompt in je AI-chat en vraag om één recept. Plak het antwoord terug in Pantry. Met een Google API-sleutel kun je Brainstorm ook rechtstreeks een recept laten maken. Er wordt alleen iets naar Google gestuurd als je zelf om een recept vraagt.",
-      privacyTitle: "Privacy en uitloggen",
-      privacyBody: "Pantry gebruikt geen analytics en plaatst geen advertenties. Zonder login blijven je recepten in deze browser. Als je uitlogt, wordt de toegang tot je Drive ingetrokken en ga je terug naar de lokale modus. Je recepten blijven in Google Drive staan.",
+      privacyTitle: "Privacy en Uitloggen",
+      privacyBody: "Pantry gebruikt geen analytics en plaatst geen advertenties. Zonder login blijven je recepten in deze browser. Als je uitlogt, wordt de toegang tot je Drive ingetrokken en ga je terug naar de lokale modus. Je recepten blijven in Google Drive staan. Verzoeken via ingebouwde AI in Brainstorm gaan via een Pantry-server, zoals hierboven beschreven.",
       version: "Pantry 1.0 — statische receptenapp"
     },
     errors: {
@@ -855,11 +855,11 @@ const STRINGS = {
     manual: {
       title: "User manual",
       introTitle: "What is Pantry?",
-      introBody: "Pantry is a simple recipe app without a server. Recipes are text only: title, category, ingredients, and steps. There are no photos.",
+      introBody: "Pantry is a simple recipe app. Recipes are text only: title, category, ingredients, and steps. There are no photos.",
       startTitle: "Getting started and signing in",
       startBody: "Tap the splash screen to use Pantry locally. Signing in is optional. Open Profile from the chef’s hat in the top right to sign in with Google. The app uses the drive.file scope and can only access files it has created itself.",
       dataTitle: "Where are your recipes?",
-      dataBody: "Without signing in, your recipes are stored only in this browser. After signing in, they are stored in your own Google Drive, in the Pantry App folder, in the file pantry-data.json. Signing in merges local recipes and categories into your Drive. There is no backend and no data is sent to any other server.",
+      dataBody: "Without signing in, your recipes are stored only in this browser. After signing in, they are stored in your own Google Drive, in the Pantry App folder, in the file pantry-data.json. Signing in merges local recipes and categories into your Drive. Built-in AI in Brainstorm is the one feature that uses a Pantry server, which forwards your request to Google.",
       recipesTitle: "Managing recipes",
       recipesBody: "Use the Cooking tab to search by title or ingredient, filter by category, and add recipes. Tap a recipe to open it. There you can also edit or delete it.",
       servingsTitle: "Servings",
@@ -874,8 +874,8 @@ const STRINGS = {
       shoppingBody: "Shopping is still a placeholder. Later you’ll see a shopping list for each recipe that updates automatically with the serving count.",
       brainstormTitle: "Brainstorm",
       brainstormBody: "Brainstorm helps you create a recipe with the AI chat of your choice. Answer a few questions, then copy a ready-made prompt. Paste it into your AI chat and ask for one recipe. Paste the reply back into Pantry. With a Google API key, Brainstorm can also create a recipe directly. Nothing is sent to Google unless you ask for a recipe.",
-      privacyTitle: "Privacy and signing out",
-      privacyBody: "Pantry uses no analytics and shows no ads. Without signing in, your recipes stay in this browser. When you sign out, access to your Drive is revoked and you return to local mode. Your recipes remain in Google Drive.",
+      privacyTitle: "Privacy and Signing out",
+      privacyBody: "Pantry uses no analytics and shows no ads. Without signing in, your recipes stay in this browser. When you sign out, access to your Drive is revoked and you return to local mode. Your recipes remain in Google Drive. Built-in AI requests go through a Pantry server, as described above.",
       version: "Pantry 1.0 — static recipe app"
     },
     errors: {
@@ -1282,11 +1282,11 @@ const STRINGS = {
     manual: {
       title: "Benutzerhandbuch",
       introTitle: "Was ist Pantry?",
-      introBody: "Pantry ist eine einfache Rezept-App ohne Server. Rezepte sind reiner Text: Titel, Kategorie, Zutaten und Zubereitung. Es gibt keine Fotos.",
+      introBody: "Pantry ist eine einfache Rezept-App. Rezepte sind reiner Text: Titel, Kategorie, Zutaten und Zubereitung. Es gibt keine Fotos.",
       startTitle: "Starten und anmelden",
       startBody: "Tippe auf den Startbildschirm, um Pantry lokal zu nutzen. Anmelden ist optional. Öffne danach Profil über den Kochhut oben rechts, um dich mit Google anzumelden. Die App nutzt den drive.file-Bereich und darf nur Dateien sehen und bearbeiten, die sie selbst erstellt hat.",
       dataTitle: "Wo sind deine Rezepte?",
-      dataBody: "Ohne Anmeldung liegen deine Rezepte nur in diesem Browser. Nach der Anmeldung werden sie in deinem eigenen Google Drive gespeichert, im Ordner Pantry App, in der Datei pantry-data.json. Beim Anmelden werden lokale Rezepte und Kategorien mit deinem Drive zusammengeführt. Es gibt kein Backend und keine Daten werden an einen anderen Server gesendet.",
+      dataBody: "Ohne Anmeldung liegen deine Rezepte nur in diesem Browser. Nach der Anmeldung werden sie in deinem eigenen Google Drive gespeichert, im Ordner Pantry App, in der Datei pantry-data.json. Beim Anmelden werden lokale Rezepte und Kategorien mit deinem Drive zusammengeführt. Die eingebaute KI in Brainstorm ist die einzige Funktion, die einen Pantry-Server nutzt: Er leitet deine Anfrage an Google weiter.",
       recipesTitle: "Rezepte verwalten",
       recipesBody: "Nutze den Tab Kochen, um nach Titel oder Zutat zu suchen, nach Kategorien zu filtern und Rezepte hinzuzufügen. Tippe auf ein Rezept, um es zu öffnen. Dort kannst du es auch bearbeiten oder löschen.",
       servingsTitle: "Portionen",
@@ -1302,7 +1302,7 @@ const STRINGS = {
       brainstormTitle: "Brainstormen",
       brainstormBody: "Brainstorm hilft dir, ein Rezept mit dem KI-Chat deiner Wahl zu erstellen. Beantworte ein paar Fragen und kopiere dann einen fertigen Prompt. Füge ihn in deinen KI-Chat ein und bitte um ein Rezept. Füge die Antwort wieder in Pantry ein. Mit einem Google API-Schlüssel kann Brainstorm auch direkt ein Rezept erstellen. Es wird nur etwas an Google gesendet, wenn du selbst um ein Rezept bittest.",
       privacyTitle: "Datenschutz und Abmelden",
-      privacyBody: "Pantry verwendet keine Analysen und zeigt keine Werbung. Ohne Anmeldung bleiben deine Rezepte in diesem Browser. Wenn du dich abmeldest, wird der Zugriff auf dein Drive widerrufen und du kehrst zum lokalen Modus zurück. Deine Rezepte bleiben in Google Drive.",
+      privacyBody: "Pantry verwendet keine Analysen und zeigt keine Werbung. Ohne Anmeldung bleiben deine Rezepte in diesem Browser. Wenn du dich abmeldest, wird der Zugriff auf dein Drive widerrufen und du kehrst zum lokalen Modus zurück. Deine Rezepte bleiben in Google Drive. Anfragen über die eingebaute KI in Brainstorm laufen über einen Pantry-Server, wie oben beschrieben.",
       version: "Pantry 1.0 — statische Rezept-App"
     },
     errors: {
