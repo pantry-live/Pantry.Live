@@ -1,15 +1,11 @@
 const GEMINI_MODEL = "gemini-3.5-flash-lite";
 const GEMINI_ENDPOINT =
   "https://generativelanguage.googleapis.com/v1beta/models/" + GEMINI_MODEL + ":generateContent";
-const DAILY_LIMIT = 5;
-const MAX_PROMPT_CHARS = 20000;
+const DAILY_LIMIT = 20;
+const MAX_PROMPT_CHARS = 5000;
 const ALLOWED_ORIGINS = [
   "https://pantrycooking.app",
-  "https://pantry-live.github.io",
-  "http://localhost:8000",
-  "http://localhost:8002",
-  "http://127.0.0.1:5500",
-  "http://localhost:5500"
+  "http://127.0.0.1:5500"
 ];
 const RECIPE_FIELDS = ["title", "category", "subcategory", "ingredients", "steps"];
 
@@ -53,6 +49,11 @@ export default {
       return reply(request, "Method not allowed", 405);
     }
 
+        // 0. Per-IP rate limit, before any Google or Gemini calls
+    const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+    const { success } = await env.RATE_LIMITER.limit({ key: ip });
+    if (!success) return reply(request, "Too many requests", 429);
+
     // 1. Sign-in token
     const auth = request.headers.get("Authorization") || "";
     const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
@@ -67,6 +68,7 @@ export default {
     if (info.aud !== env.GOOGLE_CLIENT_ID) return reply(request, "Wrong app", 401);
 
     // 3. Tester list
+    if (!info.email) return reply(request, "Invalid sign-in", 401);
     const email = info.email.toLowerCase();
     const testers = JSON.parse((await env.PANTRY_KV.get("testers")) || "[]");
     if (!testers.includes(email)) return reply(request, "Not a tester", 403);

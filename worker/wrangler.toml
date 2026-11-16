@@ -9,3 +9,8 @@ id = "58ff3d1f6da44da2ad03994627d324e6"
 
 [vars]
 GOOGLE_CLIENT_ID = "931539024578-ff9n1a77fceu5vgg7agesbpsr2bfeits.apps.googleusercontent.com"
+
+[[ratelimits]]
+name = "RATE_LIMITER"
+namespace_id = "1001"
+simple = { limit = 30, period = 60 }   # 30 requests per IP per 60 seconds
