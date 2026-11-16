@@ -19,7 +19,7 @@ The interface is available in **Dutch, English, and German**. On first start, Pa
 - Screen Wake Lock while a recipe is open (when supported).
 - Automatic light and dark theme.
 - Brainstorm: answer a few questions, then either use built-in AI to generate a recipe, or copy a prompt into the AI chat of your choice and paste the reply back.
-- Built-in AI in Brainstorm: sign in with Google and the request goes through the Pantry Worker to Gemini. Each tester is limited to 3 requests per day.
+- Built-in AI in Brainstorm: sign in with Google and the request goes through the Pantry Worker to Gemini. Each tester is limited to 5 requests per day.
 - Shopping tab: a translated placeholder for now.
 
 ## Requirements
