@@ -2115,30 +2115,6 @@ a {
   line-height: 1.6;
 }
 
-.brainstorm-points {
-  display: grid;
-  gap: 9px;
-  max-width: 540px;
-  list-style: none;
-}
-
-.brainstorm-point {
-  display: flex;
-  align-items: flex-start;
-  gap: 9px;
-  color: var(--text-muted);
-  font-size: 13.5px;
-  line-height: 1.5;
-}
-
-.brainstorm-point .icon {
-  flex: none;
-  width: 17px;
-  height: 17px;
-  margin-top: 1px;
-  color: var(--accent-strong);
-}
-
 .brainstorm-actions {
   display: flex;
   align-items: center;
@@ -2298,79 +2274,12 @@ a {
   color: var(--text);
 }
 
-.brainstorm-setup {
-  display: grid;
-  gap: 16px;
-}
-
-.wizard__head {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 12px;
-}
-
 .wizard__progress {
   color: var(--accent-strong);
   font-size: 12px;
   font-weight: 680;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-}
-
-.wizard__title {
-  margin-top: 2px;
-  font-size: 22px;
-  font-weight: 690;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
-}
-
-.wizard__text {
-  color: var(--text-muted);
-  font-size: 14px;
-  line-height: 1.55;
-}
-
-.brainstorm-steps {
-  list-style: none;
-  counter-reset: step;
-  margin: 0 0 16px;
-  padding: 0;
-  color: var(--text-muted);
-  font-size: 14px;
-  line-height: 1.55;
-}
-
-.brainstorm-steps li {
-  position: relative;
-  counter-increment: step;
-  padding-left: 1.6em;
-}
-
-.brainstorm-steps li + li {
-  margin-top: 6px;
-}
-
-.brainstorm-steps li::before {
-  content: counter(step) ".";
-  position: absolute;
-  left: 0;
-  color: var(--text-muted);
-  font-weight: 650;
-}
-
-.wizard__actions {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 4px;
-}
-
-.wizard__actions .button {
-  flex: 1;
-  min-width: 130px;
 }
 
 .form-error {
