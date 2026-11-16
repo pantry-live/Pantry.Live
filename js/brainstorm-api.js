@@ -8,7 +8,6 @@
 import { getLanguageMeta, t } from "./i18n.js";
 import { getAiIdToken } from "./ai-auth.js";
 
-// Replace YOUR-SUBDOMAIN with the address printed by `npx wrangler deploy`.
 const WORKER_URL = "https://pantry-live-proxy.pantry-live.workers.dev";
 const REQUEST_TIMEOUT_MS = 30000;
 const RECIPE_FIELDS = ["title", "category", "subcategory", "ingredients", "steps"];
@@ -27,16 +26,6 @@ export class BrainstormError extends Error {
 /** True when the user is signed in for built-in AI. */
 export function hasConnection() {
   return Boolean(getAiIdToken());
-}
-
-/** Kept only so the old setup code still loads. Keys are no longer stored. */
-export function saveConnectionCode() {
-  return false;
-}
-
-/** Kept only so sign-out still loads. Nothing is stored any more. */
-export function clearConnectionCode() {
-  return true;
 }
 
 /* ---------------------------- Prompt builder ----------------------------- */
@@ -100,10 +89,6 @@ function outputContract(languageName) {
   ].join("\n");
 }
 
-/**
- * Build one deterministic prompt from the Phase 3 answers and Pantry categories.
- * The same answers, categories, and UI language always produce the same text.
- */
 export function buildRecipePrompt(answers = {}, categories = []) {
   const isPantry = answers.source === "pantry";
   const languageName = getLanguageMeta().nativeName;

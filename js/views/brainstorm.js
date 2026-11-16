@@ -122,7 +122,7 @@ function renderReady(root) {
   `;
 
   root.querySelector('[data-action="start"]')?.addEventListener("click", () => {
-    openWizard(root, undefined, "api");
+    openWizard(root, undefined, "AI");
   });
 
   root.querySelector('[data-action="prompt"]')?.addEventListener("click", () => {
@@ -134,173 +134,6 @@ function renderReady(root) {
   });
 }
 
-/* ---------------------------- Setup wizard ------------------------------ */
-
-function openSetup(root) {
-  const wrapper = document.createElement("div");
-  wrapper.className = "brainstorm-setup";
-
-  const modal = openModal({
-    title: "",
-    body: wrapper,
-    actions: []
-  });
-
-  modal.modal?.removeAttribute("aria-labelledby");
-  modal.modal?.setAttribute("aria-label", t("brainstorm.setupTitle"));
-
-  const totalSteps = 3;
-  let step = 1;
-  let codeValue = "";
-
-  const showError = (message) => {
-    const error = wrapper.querySelector('[data-ref="error"]');
-    if (!error) return;
-    error.textContent = message;
-    error.hidden = false;
-  };
-
-  const save = () => {
-    const input = wrapper.querySelector('[data-ref="code"]');
-    const code = String(input?.value || codeValue || "").trim();
-
-    if (!code) {
-      showError(t("brainstorm.setupEmpty"));
-      input?.focus();
-      return;
-    }
-
-    if (!saveConnectionCode(code)) {
-      showError(t("common.error"));
-      return;
-    }
-
-    modal.close();
-    toast(t("brainstorm.setupSaved"), "success");
-    renderReady(root);
-  };
-
-  const next = () => {
-    if (step < totalSteps) {
-      step += 1;
-      renderStep();
-      return;
-    }
-    save();
-  };
-
-  const renderStep = () => {
-    const isLast = step === totalSteps;
-    const titleKey = step === 1
-      ? "brainstorm.setupNeedTitle"
-      : step === 2
-        ? "brainstorm.setupCodeTitle"
-        : "brainstorm.setupPasteTitle";
-
-    const studioSteps = [1, 2, 3, 4, 5]
-      .map((n) => `<li>${escapeHtml(t(`brainstorm.setupStudio${n}`))}</li>`)
-      .join("");
-
-    const content = step === 1
-      ? `
-        <p class="wizard__text">${escapeHtml(t("brainstorm.setupNeedText"))}</p>
-        <ul class="brainstorm-points">
-          <li class="brainstorm-point">
-            ${icon("check")}
-            <span>${escapeHtml(t("brainstorm.setupNeedPointTime"))}</span>
-          </li>
-          <li class="brainstorm-point">
-            ${icon("check")}
-            <span>${escapeHtml(t("brainstorm.setupNeedPointLocal"))}</span>
-          </li>
-        </ul>
-      `
-      : step === 2
-        ? `
-          <p class="wizard__text">${escapeHtml(t("brainstorm.setupCodeText"))}</p>
-          <ol class="brainstorm-steps">${studioSteps}</ol>
-          <a class="button button--secondary" href="https://aistudio.google.com/app/apikey"
-             target="_blank" rel="noopener">
-            ${escapeHtml(t("brainstorm.setupOpenStudio"))}
-          </a>
-          <p class="field__hint">${escapeHtml(t("brainstorm.introPointPrivacy"))}</p>
-        `
-        : `
-          <p class="wizard__text">${escapeHtml(t("brainstorm.setupPasteText"))}</p>
-          <label class="field">
-            <span class="field__label">${escapeHtml(t("brainstorm.setupCodeLabel"))}</span>
-            <input class="input" type="password" data-ref="code" autocomplete="off"
-                   spellcheck="false" placeholder="${escapeHtml(t("brainstorm.keyPlaceholder"))}"
-                   value="${escapeHtml(codeValue)}">
-          </label>
-          <p class="field__hint">${escapeHtml(t("brainstorm.introPointPrivacy"))}</p>
-        `;
-
-    wrapper.innerHTML = `
-      <div class="wizard__head">
-        <div>
-          <p class="wizard__progress">
-            ${escapeHtml(t("brainstorm.setupStepCounter", { current: step, total: totalSteps }))}
-          </p>
-          <h2 class="wizard__title" tabindex="-1" data-ref="title">
-            ${escapeHtml(t(titleKey))}
-          </h2>
-        </div>
-        <button class="icon-button" type="button" data-action="close"
-                aria-label="${escapeHtml(t("common.close"))}">
-          ${icon("close")}
-        </button>
-      </div>
-
-      ${content}
-
-      <p class="form-error" data-ref="error" role="alert" hidden></p>
-
-      <div class="wizard__actions">
-        <button class="button button--secondary" type="button" data-action="back">
-          ${escapeHtml(step === 1 ? t("common.cancel") : t("common.back"))}
-        </button>
-        <button class="button" type="button" data-action="next">
-          ${escapeHtml(isLast ? t("brainstorm.connectBtn") : t("common.continue"))}
-        </button>
-      </div>
-    `;
-
-    const input = wrapper.querySelector('[data-ref="code"]');
-
-    if (input) {
-      input.addEventListener("input", () => {
-        codeValue = input.value;
-      });
-      input.addEventListener("keydown", (event) => {
-        if (event.key === "Enter") {
-          event.preventDefault();
-          next();
-        }
-      });
-    }
-
-    wrapper.querySelector('[data-action="close"]')?.addEventListener("click", () => {
-      modal.close();
-    });
-
-    wrapper.querySelector('[data-action="back"]')?.addEventListener("click", () => {
-      if (step === 1) {
-        modal.close();
-        return;
-      }
-      step -= 1;
-      renderStep();
-    });
-
-    wrapper.querySelector('[data-action="next"]')?.addEventListener("click", next);
-
-    const focusTarget = input || wrapper.querySelector('[data-ref="title"]');
-    window.requestAnimationFrame(() => focusTarget?.focus());
-  };
-
-  renderStep();
-}
 
 /* ---------------------------- Question flow ----------------------------- */
 
@@ -984,7 +817,7 @@ function renderGenerationError(root, answers, error) {
   });
 
   root.querySelector('[data-action="change"]')?.addEventListener("click", () => {
-    openWizard(root, answers, "api");
+    openWizard(root, answers, "AI");
   });
 
   window.requestAnimationFrame(() => {
@@ -1054,7 +887,7 @@ function renderResult(root, answers, recipe) {
 
   root.querySelector('[data-action="retry"]')?.addEventListener("click", () => {
     pendingResult = null;
-    openWizard(root, answers, "api");
+    openWizard(root, answers, "AI");
   });
 
   root.querySelectorAll('[data-action="reject"]').forEach((button) => {
@@ -1169,7 +1002,7 @@ function savePromptRecipe(root, answers, button) {
   renderHome(root);
 }
 
-function openWizard(root, initialAnswers, mode = "api", initialStep = 1) {
+function openWizard(root, initialAnswers, mode = "AI", initialStep = 1) {
   const answers = createAnswers(initialAnswers);
   let step = initialStep;
 

@@ -231,7 +231,7 @@ const STRINGS = {
     brainstorm: {
       title: "Brainstormen met AI",
       readyTitle: "Klaar om te brainstormen?",
-      readyText: "Beantwoord een paar vragen. Met een API-sleutel krijg je direct een recept. Zonder sleutel kopieer je een prompt naar de AI-chat van je keuze en plak je het antwoord terug.",
+      readyText: "Beantwoord een paar vragen. Met de Google login krijg je direct een recept. Zonder login kopieer je een prompt naar de AI-chat van je keuze en plak je het antwoord terug.",
       modeText: "Brainstorm werkt met je eigen AI-chat. Je kunt ook een Google API-sleutel toevoegen om recepten direct in Pantry te laten maken.",
       useOwnChatBtn: "Gebruik mijn eigen AI-chat",
       connectKeyBtn: "Google API-sleutel toevoegen",
@@ -657,7 +657,7 @@ const STRINGS = {
     brainstorm: {
       title: "Brainstorm with AI",
       readyTitle: "Ready to brainstorm?",
-      readyText: "Answer a few questions. With an API key you get a recipe right away. Without one, you copy a prompt into the AI chat of your choice and paste the reply back.",
+      readyText: "Answer a few questions. With a Google login you get a recipe right away. Without one, you copy a prompt into the AI chat of your choice and paste the reply back.",
       modeText: "Brainstorm works with your own AI chat. You can also add a Google API key to have recipes created directly in Pantry.",
       useOwnChatBtn: "Use my own AI chat",
       connectKeyBtn: "Add a Google API key",
@@ -1083,7 +1083,7 @@ const STRINGS = {
     brainstorm: {
       title: "Brainstormen mit KI",
       readyTitle: "Bereit zum Brainstormen?",
-      readyText: "Beantworte ein paar Fragen. Mit einem API-Schlüssel erhältst du direkt ein Rezept. Ohne Schlüssel kopierst du einen Prompt in den KI-Chat deiner Wahl und fügst die Antwort wieder ein.",
+      readyText: "Beantworte ein paar Fragen. Mit einem Google login erhältst du direkt ein Rezept. Ohne login kopierst du einen Prompt in den KI-Chat deiner Wahl und fügst die Antwort wieder ein.",
       modeText: "Brainstorm funktioniert mit deinem eigenen KI-Chat. Du kannst auch einen Google API-Schlüssel hinzufügen, um Rezepte direkt in Pantry erstellen zu lassen.",
       useOwnChatBtn: "Eigenen KI-Chat verwenden",
       connectKeyBtn: "Google API-Schlüssel hinzufügen",
