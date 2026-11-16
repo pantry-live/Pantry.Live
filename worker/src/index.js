@@ -2,7 +2,7 @@ const GEMINI_MODEL = "gemini-3.5-flash-lite";
 const GEMINI_ENDPOINT =
   "https://generativelanguage.googleapis.com/v1beta/models/" + GEMINI_MODEL + ":generateContent";
 const DAILY_LIMIT = 20;
-const MAX_PROMPT_CHARS = 5000;
+const MAX_PROMPT_CHARS = 7000;
 const ALLOWED_ORIGINS = [
   "https://pantrycooking.app",
   "http://127.0.0.1:5500"
