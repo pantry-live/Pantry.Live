@@ -7,7 +7,8 @@ import { escapeHtml, icon, confirmDialog, toast } from "../ui.js";
 import { exportRecipes } from "../exchange.js";
 import { importFile } from "../importer.js";
 import { openManual } from "../manual.js";
-import { clearConnectionCode, hasConnection } from "../brainstorm-api.js";
+import { clearAiSession } from "../ai-auth.js";
+import { hasConnection } from "../brainstorm-api.js";
 import * as store from "../store.js";
 
 export function render(root, ctx) {
@@ -78,14 +79,6 @@ export function render(root, ctx) {
           </span>
         </div>
 
-        <button class="settings-row settings-row--button" type="button" data-action="brainstorm">
-          <span class="settings-row__text">
-            <span class="settings-row__title">${escapeHtml(t("settings.openBrainstorm"))}</span>
-            <span class="settings-row__desc">${escapeHtml(t("settings.openBrainstormHint"))}</span>
-          </span>
-          <span class="settings-row__control" aria-hidden="true">${icon("arrow-right")}</span>
-        </button>
-
         ${brainstormConnected ? `
           <button class="settings-row settings-row--button settings-row--danger"
             type="button" data-action="disconnect-brainstorm">
@@ -144,8 +137,6 @@ export function render(root, ctx) {
       ctx.showTutorial();
     } else if (action === "manual") {
       openManual();
-    } else if (action === "brainstorm") {
-      ctx.navigate("brainstorm");
     } else if (action === "disconnect-brainstorm") {
       handleDisconnectBrainstorm(ctx);
     } else if (action === "export") {
@@ -167,7 +158,7 @@ async function handleDisconnectBrainstorm(ctx) {
 
   if (!confirmed) return;
 
-  clearConnectionCode();
+  clearAiSession();
   toast(t("settings.brainstormDisconnected"));
   ctx.rerender();
 }

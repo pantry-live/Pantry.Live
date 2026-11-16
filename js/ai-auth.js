@@ -92,3 +92,10 @@ export async function renderAiSignIn(container) {
   });
   return true;
 }
+
+/** End the built-in AI sign-in on this page. The user can sign in again at any time. */
+export function clearAiSession() {
+  idToken = null;
+  expiresAt = 0;
+  notify();
+}
