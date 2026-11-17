@@ -91,25 +91,18 @@ export function render(root, ctx) {
         ` : ""}
       </section>
 
-      <section class="settings-card" aria-label="${escapeHtml(t("settings.importTitle"))}">
-        <button class="settings-row settings-row--button" type="button" data-action="import">
-          <span class="settings-row__text">
-            <span class="settings-row__title">${escapeHtml(t("settings.importTitle"))}</span>
-            <span class="settings-row__desc">${escapeHtml(t("settings.importHint"))}</span>
-          </span>
-          <span class="settings-row__control" aria-hidden="true">${icon("arrow-right")}</span>
+      <div class="settings-tiles">
+        <button class="settings-tile" type="button" data-action="import">
+          <span class="settings-tile__icon" aria-hidden="true">${icon("download")}</span>
+          <span class="settings-tile__title">${escapeHtml(t("settings.importTitle"))}</span>
+          <span class="settings-tile__desc">${escapeHtml(t("settings.importHint"))}</span>
         </button>
-      </section>
-
-      <section class="settings-card" aria-label="${escapeHtml(t("settings.exportTitle"))}">
-        <button class="settings-row settings-row--button" type="button" data-action="export">
-          <span class="settings-row__text">
-            <span class="settings-row__title">${escapeHtml(t("settings.exportTitle"))}</span>
-            <span class="settings-row__desc">${escapeHtml(t("settings.exportHint"))}</span>
-          </span>
-          <span class="settings-row__control" aria-hidden="true">${icon("arrow-right")}</span>
+        <button class="settings-tile" type="button" data-action="export">
+          <span class="settings-tile__icon" aria-hidden="true">${icon("upload")}</span>
+          <span class="settings-tile__title">${escapeHtml(t("settings.exportTitle"))}</span>
+          <span class="settings-tile__desc">${escapeHtml(t("settings.exportHint"))}</span>
         </button>
-      </section>
+      </div>
 
       <section class="settings-card" aria-label="${escapeHtml(t("settings.about"))}">
         <div class="settings-row">
