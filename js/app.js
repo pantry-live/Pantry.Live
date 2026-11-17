@@ -29,9 +29,7 @@ const elements = {
   splashButton: document.getElementById("splash-button"),
   splashHint: document.getElementById("splash-hint"),
   splashWarning: document.getElementById("splash-warning"),
-  splashPrivacy: document.getElementById("splash-privacy"),
   splashPrivacyTitle: document.getElementById("splash-privacy-title"),
-  splashPrivacyBody: document.getElementById("splash-privacy-body"),
   app: document.getElementById("app"),
   view: document.getElementById("view"),
   headerBack: document.getElementById("header-back"),
@@ -93,10 +91,6 @@ function applySplashLabels() {
   if (elements.splashPrivacyTitle) {
     elements.splashPrivacyTitle.textContent = t("splash.privacyTitle");
   }
-  if (elements.splashPrivacyBody) {
-    elements.splashPrivacyBody.textContent = t("splash.privacyBody");
-  }
-  if (elements.splashPrivacy) elements.splashPrivacy.hidden = false;
   elements.splashButton?.setAttribute("aria-label", t("splash.tapToStart"));
 }
 
