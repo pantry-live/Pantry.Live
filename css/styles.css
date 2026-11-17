@@ -2274,6 +2274,12 @@ a {
   color: var(--text);
 }
 
+.brainstorm-card__body > .link-button {
+  justify-self: start;
+  text-align: left;
+  padding-left: 8px;
+}
+
 .wizard__progress {
   color: var(--accent-strong);
   font-size: 12px;
