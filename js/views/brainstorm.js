@@ -20,10 +20,52 @@ let mountedRoot = null;
 let wizardDraft = null; // { step, answers, mode } while the wizard is open
 let pendingResult = null;
 
-// Re-draw when the user signs in or out for AI.
-onAiSessionChange(() => {
+// The notice is shown once per sign-in. It is kept in memory only.
+let aiNoticeAccepted = false;
+let aiNoticeOpen = false;
+
+onAiSessionChange((signedIn) => {
+  if (!signedIn) {
+    aiNoticeAccepted = false;
+  }
+
+  // Re-draw when the user signs in or out for AI.
   if (mountedRoot && !activeController) render(mountedRoot);
+
+  if (signedIn && !aiNoticeAccepted && !aiNoticeOpen && mountedRoot?.isConnected) {
+    showAiNotice();
+  }
 });
+
+function showAiNotice() {
+  aiNoticeOpen = true;
+  openModal({
+    title: t("brainstorm.aiNoticeTitle"),
+    body: `
+      <p>${escapeHtml(t("brainstorm.aiNoticeBody"))}</p>
+      <p><strong>${escapeHtml(t("brainstorm.aiNoticeDisclaimer"))}</strong></p>
+    `,
+    closable: false,
+    onClose: () => {
+      aiNoticeOpen = false;
+    },
+    actions: [
+      {
+        label: t("brainstorm.aiNoticeCancel"),
+        variant: "secondary",
+        onClick: () => {
+          clearAiSession(); // Signs out of built-in AI; the listener above redraws the tab.
+        }
+      },
+      {
+        label: t("brainstorm.aiNoticeContinue"),
+        onClick: () => {
+          aiNoticeAccepted = true;
+        }
+      }
+    ]
+  });
+}
 
 export function render(root) {
   mountedRoot = root;

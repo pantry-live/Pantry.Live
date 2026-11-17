@@ -337,7 +337,12 @@ const STRINGS = {
       errorRequest: "Je aanvraag is te lang. Verkort je ingrediënten of voorkeuren en probeer het opnieuw.",
       errorServer: "Google kon geen recept maken. Probeer het zo opnieuw.",
       errorNetwork: "Je bent offline of de verbinding is verbroken. Controleer je internet en probeer het opnieuw.",
-      errorMalformed: "Het antwoord was onvolledig. Probeer het opnieuw."
+      errorMalformed: "Het antwoord was onvolledig. Probeer het opnieuw.",
+      aiNoticeTitle: "Built-in AI gebruiken",
+      aiNoticeBody: "Built-in AI stuurt je antwoorden en je aanmelding via de Pantry-server naar Google Gemini. Google mag deze gegevens gebruiken om zijn diensten te verbeteren, en mensen kunnen ze inzien. Vul alleen gezondheidsgegevens of persoonlijke details in als je dit wilt. Je recepten worden niet verstuurd.",
+      aiNoticeDisclaimer: "AI-gegenereerde recepten zijn uitsluitend bedoeld ter informatie. Controleer altijd de etiketten van de ingrediënten voordat je gaat koken.",
+      aiNoticeContinue: "Doorgaan",
+      aiNoticeCancel: "Annuleren"
     },
     profile: {
       title: "Profiel",
@@ -736,7 +741,12 @@ const STRINGS = {
       errorRequest: "Your request is too long. Please shorten your ingredients or preferences and try again",
       errorServer: "Google could not create a recipe. Try again shortly.",
       errorNetwork: "You are offline or the connection was interrupted. Check your internet and try again.",
-      errorMalformed: "The reply was incomplete. Try again."
+      errorMalformed: "The reply was incomplete. Try again.",
+      aiNoticeTitle: "Before you use built-in AI",
+      aiNoticeBody: "Built-in AI sends your answers and sign-in through the Pantry server to Google Gemini. Google may use this data to improve its services, and people may read it. Only enter health details or personal information if you wish to do so. Your recipes are not sent.",
+      aiNoticeDisclaimer: "AI-generated recipes are for informational purposes only. Always check physical ingredient labels before cooking.",
+      aiNoticeContinue: "Continue",
+      aiNoticeCancel: "Cancel"
     },
     profile: {
       title: "Profile",
@@ -1135,7 +1145,12 @@ const STRINGS = {
       errorRequest: "Deine Anfrage ist zu lang. Bitte verkürze deine Zutaten oder Präferenzen und versuche es erneut.",
       errorServer: "Google konnte kein Rezept erstellen. Versuche es gleich noch einmal.",
       errorNetwork: "Du bist offline oder die Verbindung wurde unterbrochen. Prüfe dein Internet und versuche es erneut.",
-      errorMalformed: "Die Antwort war unvollständig. Versuche es erneut."
+      errorMalformed: "Die Antwort war unvollständig. Versuche es erneut.",
+      aiNoticeTitle: "Vor der Nutzung der integrierten KI",
+      aiNoticeBody: "Die integrierte KI sendet deine Antworten und deine Anmeldung über den Pantry-Server an Google Gemini. Google darf diese Daten zur Verbesserung seiner Dienste verwenden, und Personen können sie einsehen. Gib nur Gesundheitsdaten oder persönlichen Angaben ein wenn du es möchtest. Deine Rezepte werden nicht gesendet.",
+      aiNoticeDisclaimer: "Von KI erstellte Rezepte dienen nur zur Information. Überprüfe vor dem Kochen immer die Zutatenetiketten.",
+      aiNoticeContinue: "Weiter",
+      aiNoticeCancel: "Abbrechen"
     },
     profile: {
       title: "Profil",
