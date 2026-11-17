@@ -14,6 +14,7 @@ import { runOnboarding, showTutorial } from "./onboarding.js";
 import { detectLanguage, setLanguage, t } from "./i18n.js";
 import { escapeHtml, icon, openModal, confirmDialog, toast } from "./ui.js";
 import { releaseWakeLock } from "./wakelock.js";
+import { openManual } from "./manual.js";
 
 localStorage.removeItem("pantry_gemini_api_key");
 
@@ -476,6 +477,7 @@ async function performSignOut() {
 
 function bindEvents() {
   elements.splashButton?.addEventListener("click", handleSplashClick);
+  elements.splashPrivacyTitle?.addEventListener("click", () => openManual("privacy"));
 
   elements.headerBack?.addEventListener("click", () => {
     if (backHandler) backHandler();

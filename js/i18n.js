@@ -421,7 +421,7 @@ const STRINGS = {
       brainstormTitle: "Brainstormen",
       brainstormBody: "Brainstorm helpt je een recept te maken. Je beantwoordt een paar vragen. Met ingebouwde AI (inloggen met Google) maakt Pantry het recept direct; je aanvraag gaat dan via een Pantry-server naar Google. Zonder ingebouwde AI kopieer je een kant-en-klare prompt, plak je die in je eigen AI-chat en plak je het antwoord terug in Pantry.",
       privacyTitle: "Privacy en uitloggen",
-      privacyBody: "Pantry gebruikt geen analytics en plaatst geen advertenties. Zonder login blijven je recepten in deze browser. Als je uitlogt, wordt de toegang tot je Drive ingetrokken en ga je terug naar de lokale modus. Je recepten blijven in Google Drive staan. Verzoeken via ingebouwde AI in Brainstorm gaan via een Pantry-server, zoals hierboven beschreven.",
+      privacyBody: "Je kunt Pantry direct gebruiken, en je recepten worden dan alleen in deze browser bewaard. Wil je ze in Google Drive bewaren, log dan in via Profiel. Pantry gebruikt de drive.file-scope en kan alleen bestanden zien die de app zelf aanmaakt. Pantry gebruikt geen analytics en toont geen advertenties. Zonder inloggen blijven je recepten in deze browser. Als je uitlogt, wordt de toegang tot je Drive ingetrokken en ga je terug naar de lokale modus. Je recepten blijven in Google Drive staan. De ingebouwde AI in Brainstorm gebruikt wel een Pantry-server: bij een receptverzoek worden je Brainstorm-antwoorden en je inlogtoken naar die server gestuurd. De server controleert of je een goedgekeurde tester bent en stuurt het verzoek door naar Google. Je recepten worden niet meegestuurd. Je kunt de toegang altijd intrekken via je Google-account.",
       version: "Pantry 1.0 — statische receptenapp"
     },
     errors: {
@@ -488,7 +488,6 @@ const STRINGS = {
       signIn: "Sign in with Google",
       configMissing: "Google sign-in is not configured. You can use Pantry locally. Add a Google Client ID to config.js for Drive.",
       privacyTitle: "Your privacy",
-      privacyBody: "You can use Pantry right away. Your recipes are then stored only in this browser. To keep them in Google Drive, sign in from Profile. Pantry uses the drive.file scope and can only see files it creates itself. Pantry has no analytics and no ads. Built-in AI in Brainstorm does use a Pantry server: when you ask for a recipe, your Brainstorm answers and your sign-in token are sent to that server, which checks that you are an approved tester and forwards the request to Google. Your recipes are not sent. You can revoke access at any time in your Google Account.",
       signingIn: "Signing in…",
       loadingRecipes: "Loading recipes…",
       gisUnavailable: "Google sign-in could not be loaded. Check your internet connection and reload the page.",
@@ -821,7 +820,7 @@ const STRINGS = {
       brainstormTitle: "Brainstorm",
       brainstormBody: "Brainstorm helps you create a recipe. Answer a few questions. With built-in AI (sign in with Google), Pantry creates the recipe for you; the request goes through a Pantry server to Google. Without built-in AI, copy a ready-made prompt, paste it into your AI chat, and paste the reply back into Pantry.",
       privacyTitle: "Privacy and signing out",
-      privacyBody: "Pantry uses no analytics and shows no ads. Without signing in, your recipes stay in this browser. When you sign out, access to your Drive is revoked and you return to local mode. Your recipes remain in Google Drive. Built-in AI requests go through a Pantry server, as described above.",
+      privacyBody: "You can use Pantry right away, and your recipes are then stored only in this browser. To keep them in Google Drive, sign in from Profile. Pantry uses the drive.file scope and can only see files it creates itself. Pantry uses no analytics and shows no ads. Without signing in, your recipes stay in this browser. When you sign out, access to your Drive is revoked and you return to local mode. Your recipes remain in Google Drive. Built-in AI in Brainstorm does use a Pantry server: when you ask for a recipe, your Brainstorm answers and your sign-in token are sent to that server, which checks that you are an approved tester and forwards the request to Google. Your recipes are not sent. You can revoke access at any time in your Google Account.",      
       version: "Pantry 1.0 — static recipe app"
     },
     errors: {
@@ -1221,7 +1220,7 @@ const STRINGS = {
       brainstormTitle: "Brainstormen",
       brainstormBody: "Brainstorm hilft dir, ein Rezept zu erstellen. Du beantwortest ein paar Fragen. Mit eingebauter KI (Anmeldung mit Google) erstellt Pantry das Rezept direkt; die Anfrage läuft dabei über einen Pantry-Server zu Google. Ohne eingebaute KI kopierst du einen fertigen Prompt, fügst ihn in deinen KI-Chat ein und fügst die Antwort wieder in Pantry ein.",
       privacyTitle: "Datenschutz und Abmelden",
-      privacyBody: "Pantry verwendet keine Analysen und zeigt keine Werbung. Ohne Anmeldung bleiben deine Rezepte in diesem Browser. Wenn du dich abmeldest, wird der Zugriff auf dein Drive widerrufen und du kehrst zum lokalen Modus zurück. Deine Rezepte bleiben in Google Drive. Anfragen über die eingebaute KI in Brainstorm laufen über einen Pantry-Server, wie oben beschrieben.",
+      privacyBody: "Du kannst Pantry sofort nutzen, und deine Rezepte werden dann nur in diesem Browser gespeichert. Um sie in Google Drive zu speichern, melde dich über Profil an. Pantry nutzt den drive.file-Bereich und sieht nur Dateien, die die App selbst erstellt. Pantry verwendet keine Analysen und zeigt keine Werbung. Ohne Anmeldung bleiben deine Rezepte in diesem Browser. Wenn du dich abmeldest, wird der Zugriff auf dein Drive widerrufen und du kehrst zum lokalen Modus zurück. Deine Rezepte bleiben in Google Drive. Die eingebaute KI in Brainstorm nutzt jedoch einen Pantry-Server: Bei einer Rezeptanfrage werden deine Brainstorm-Angaben und dein Anmelde-Token an diesen Server gesendet. Der Server prüft, ob du ein freigegebener Tester bist, und leitet die Anfrage an Google weiter. Deine Rezepte werden nicht mitgesendet. Du kannst den Zugriff jederzeit in deinem Google-Konto widerrufen.",      
       version: "Pantry 1.0 — statische Rezept-App"
     },
     errors: {
