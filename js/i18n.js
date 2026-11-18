@@ -25,14 +25,15 @@ const DEFAULT_CATEGORIES = {
 };
 
 const VOICE_COMMANDS = {
-  nl: ["volgende", "verder", "ga door", "klaar", "next"],
-  en: ["next", "continue", "forward", "done", "volgende"]
+  nl: ["volgende", "verder", "ga door", "klaar"],
+  en: ["next", "continue", "forward", "done"],
+  de: ["weiter", "nächste", "fortfahren", "fertig",]
 };
 
 const BACK_COMMANDS = {
-  nl: ["vorige", "terug", "back", "previous"],
+  nl: ["vorige", "terug", "ga terug"],
   en: ["back", "previous", "go back"],
-  de: ["zurück", "vorher", "back", "previous"]
+  de: ["zurück", "vorher", "gehe zurück"]
 };
 
 export function getBackCommands(language = current) {
@@ -207,7 +208,7 @@ const STRINGS = {
       nextItem: "Volgende",
       startVoice: "Start spraak",
       stopVoice: "Stop spraak",
-      listening: "Luistert… zeg ‘volgende’",
+      listening: "Luistert… zeg ‘volgende’ of ‘terug’",
       voiceUnsupported: "Spraakherkenning wordt niet ondersteund in deze browser.",
       micDenied: "Microfoontoegang is geweigerd.",
       voiceError: "Spraakherkenning is gestopt.",
@@ -611,7 +612,7 @@ const STRINGS = {
       nextItem: "Next",
       startVoice: "Start voice",
       stopVoice: "Stop voice",
-      listening: "Listening… say ‘next’",
+      listening: "Listening… say ‘next’ or ‘back’",
       voiceUnsupported: "Voice recognition is not supported in this browser.",
       micDenied: "Microphone access was denied.",
       voiceError: "Voice recognition stopped.",
@@ -1015,7 +1016,7 @@ const STRINGS = {
       nextItem: "Weiter",
       startVoice: "Sprache starten",
       stopVoice: "Sprache stoppen",
-      listening: "Höre zu… sage ‚next‘",
+      listening: "Höre zu… sage ‚nächste‘ oder ‚zurück‘",
       voiceUnsupported: "Spracherkennung wird in diesem Browser nicht unterstützt.",
       micDenied: "Mikrofonzugriff wurde verweigert.",
       voiceError: "Spracherkennung wurde beendet.",
