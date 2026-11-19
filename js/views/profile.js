@@ -7,19 +7,13 @@ import * as store from "../store.js";
 import { escapeHtml, icon, confirmDialog, toast } from "../ui.js";
 import { t } from "../i18n.js";
 
-export function render(root, ctx) {
-  ctx.setBack(() => ctx.closeSettings());
-
+/** Account card and sign-in/sign-out button. Used by the Profile page and by Settings. */
+export function accountHtml() {
   const mode = store.getMode();
   const profile = auth.getProfile();
   const name = profile?.name || t("profile.googleAccount");
 
-  root.innerHTML = `
-    <div class="page-header">
-      <h1 class="page-title">${escapeHtml(t("profile.title"))}</h1>
-    </div>
-
-    <div class="settings">
+  return `
       <section class="settings-card" aria-label="${escapeHtml(t("profile.title"))}">
         <div class="settings-row">
           <div class="settings-row__text">
@@ -57,9 +51,11 @@ export function render(root, ctx) {
           </button>
         </section>
       `}
-    </div>
   `;
+}
 
+/** Wires the sign-in and sign-out buttons inside a root element. */
+export function bindAccountActions(root, ctx) {
   root.addEventListener("click", async (event) => {
     const action = event.target.closest("[data-action]")?.dataset.action;
 
@@ -69,6 +65,22 @@ export function render(root, ctx) {
       await handleSignIn(event.target.closest("[data-action]"), ctx);
     }
   });
+}
+
+export function render(root, ctx) {
+  ctx.setBack(() => ctx.closeSettings());
+
+  root.innerHTML = `
+    <div class="page-header">
+      <h1 class="page-title">${escapeHtml(t("profile.title"))}</h1>
+    </div>
+
+    <div class="settings">
+      ${accountHtml()}
+    </div>
+  `;
+
+  bindAccountActions(root, ctx);
 }
 
 async function handleSignIn(button, ctx) {
