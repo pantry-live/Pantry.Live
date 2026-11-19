@@ -1,5 +1,5 @@
 /*
- * Pantry — profile: guest mode, Google Drive sign-in, and sign-out.
+ * Pantry — account card and sign-in/sign-out, shown at the top of Settings.
  */
 
 import * as auth from "../auth.js";
@@ -66,22 +66,6 @@ export function bindAccountActions(root, ctx) {
       await handleSignIn(event.target.closest("[data-action]"), ctx);
     }
   });
-}
-
-export function render(root, ctx) {
-  ctx.setBack(() => ctx.closeSettings());
-
-  root.innerHTML = `
-    <div class="page-header">
-      <h1 class="page-title">${escapeHtml(t("profile.title"))}</h1>
-    </div>
-
-    <div class="settings">
-      ${accountHtml()}
-    </div>
-  `;
-
-  bindAccountActions(root, ctx);
 }
 
 async function handleSignIn(button, ctx) {
