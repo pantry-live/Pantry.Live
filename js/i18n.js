@@ -80,7 +80,6 @@ const STRINGS = {
       shopping: "Boodschappen",
       brainstorm: "Brainstormen",
       settings: "Instellingen",
-      profile: "Profiel",
       main: "Hoofdnavigatie"
     },
     splash: {
@@ -484,7 +483,6 @@ const STRINGS = {
       shopping: "Shopping",
       brainstorm: "Brainstorm",
       settings: "Settings",
-      profile: "Profile",
       main: "Main navigation"
     },
     splash: {
@@ -888,7 +886,6 @@ const STRINGS = {
       shopping: "Einkaufen",
       brainstorm: "Ideen",
       settings: "Einstellungen",
-      profile: "Profil",
       main: "Hauptnavigation"
     },
     splash: {
