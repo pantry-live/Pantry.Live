@@ -9,7 +9,6 @@ import * as cookingView from "./views/cooking.js";
 import * as shoppingView from "./views/shopping.js";
 import * as brainstormView from "./views/brainstorm.js";
 import * as settingsView from "./views/settings.js";
-import * as profileView from "./views/profile.js";
 import { runOnboarding, showTutorial } from "./onboarding.js";
 import { detectLanguage, setLanguage, t } from "./i18n.js";
 import { escapeHtml, icon, openModal, confirmDialog, toast } from "./ui.js";
@@ -35,7 +34,6 @@ const elements = {
   headerBack: document.getElementById("header-back"),
   homeButton: document.getElementById("header-home"),
   settingsButton: document.getElementById("open-settings"),
-  profileButton: document.getElementById("open-profile"),
   tabbar: document.querySelector(".tabbar"),
   tabButtons: [...document.querySelectorAll("[data-tab]")]
 };
@@ -54,7 +52,6 @@ const ctx = {
     showTab(tab);
   },
   openSettings,
-  openProfile,
   closeSettings() {
     showTab(currentTab);
   },
@@ -236,15 +233,6 @@ function openSettings() {
   applyChrome();
 }
 
-function openProfile() {
-  if (!store.getData()) return;
-
-  currentScreen = "profile";
-  mountCurrent();
-  updateActiveTab();
-  applyChrome();
-}
-
 function mountCurrent() {
   if (!elements.view) return;
 
@@ -265,10 +253,8 @@ function mountCurrent() {
   elements.view.append(content);
 
   const module = currentScreen === "settings"
-    ? settingsView
-    : currentScreen === "profile"
-      ? profileView
-      : VIEWS[currentTab];
+  ? settingsView
+  : VIEWS[currentTab];
 
   try {
     activeCleanup = module.render(content, ctx) || null;
@@ -292,18 +278,15 @@ function applyChrome() {
 
   elements.tabbar?.setAttribute("aria-label", t("nav.main"));
   elements.settingsButton?.setAttribute("aria-label", t("nav.settings"));
-  elements.profileButton?.setAttribute("aria-label", t("nav.profile"));
   elements.headerBack?.setAttribute("aria-label", t("common.back"));
   applySplashLabels();
 
   if (elements.app?.hidden) {
     document.title = "Pantry";
   } else {
-    const label = currentScreen === "settings"
+      const label = currentScreen === "settings"
       ? t("nav.settings")
-      : currentScreen === "profile"
-        ? t("nav.profile")
-        : t(`nav.${currentTab}`);
+      : t(`nav.${currentTab}`);
     document.title = `${label} · Pantry`;
   }
 }
@@ -482,7 +465,6 @@ function bindEvents() {
   });
 
   elements.settingsButton?.addEventListener("click", openSettings);
-  elements.profileButton?.addEventListener("click", openProfile);
 
   for (const button of elements.tabButtons) {
     button.addEventListener("click", () => showTab(button.dataset.tab));
