@@ -9,6 +9,7 @@ import { importFile } from "../importer.js";
 import { openManual } from "../manual.js";
 import { clearAiSession } from "../ai-auth.js";
 import { hasConnection } from "../brainstorm-api.js";
+import { accountHtml, bindAccountActions } from "./profile.js";
 import * as store from "../store.js";
 
 export function render(root, ctx) {
@@ -23,6 +24,8 @@ export function render(root, ctx) {
     </div>
 
     <div class="settings">
+      ${accountHtml()}
+
       <section class="settings-card" aria-label="${escapeHtml(t("settings.language"))}">
         <div class="settings-row">
           <div class="settings-row__text">
@@ -138,6 +141,8 @@ export function render(root, ctx) {
       handleImport();
     }
   });
+
+  bindAccountActions(root, ctx);
 }
 
 async function handleDisconnectBrainstorm(ctx) {

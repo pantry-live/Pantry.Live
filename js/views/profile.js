@@ -7,7 +7,10 @@ import * as store from "../store.js";
 import { escapeHtml, icon, confirmDialog, toast } from "../ui.js";
 import { t } from "../i18n.js";
 
-/** Account card and sign-in/sign-out button. Used by the Profile page and by Settings. */
+/**
+ * One account card, Apple ID style: the account header on top,
+ * then a divider, then the sign-in or sign-out row. Used by Settings.
+ */
 export function accountHtml() {
   const mode = store.getMode();
   const profile = auth.getProfile();
@@ -27,30 +30,28 @@ export function accountHtml() {
           </div>
           <span class="badge">${escapeHtml(mode === "drive" ? t("profile.driveBadge") : t("profile.guestBadge"))}</span>
         </div>
-      </section>
 
-      ${mode === "drive" ? `
-        <section class="settings-card" aria-label="${escapeHtml(t("profile.signOut"))}">
-          <button class="settings-row settings-row--button settings-row--danger"
-            type="button" data-action="sign-out">
-            <span class="settings-row__text">
-              <span class="settings-row__title">${escapeHtml(t("profile.signOut"))}</span>
-              <span class="settings-row__desc">${escapeHtml(t("profile.signOutHint"))}</span>
-            </span>
-            <span class="settings-row__control" aria-hidden="true">${icon("arrow-right")}</span>
-          </button>
-        </section>
-      ` : `
-        <section class="settings-card" aria-label="${escapeHtml(t("profile.signIn"))}">
-          <button class="settings-row settings-row--button" type="button" data-action="sign-in">
-            <span class="settings-row__text">
-              <span class="settings-row__title">${escapeHtml(t("profile.signIn"))}</span>
-              <span class="settings-row__desc">${escapeHtml(t("profile.signInHint"))}</span>
-            </span>
-            <span class="settings-row__control" aria-hidden="true">${icon("arrow-right")}</span>
-          </button>
-        </section>
-      `}
+        <div style="border-top: 1px solid rgba(127, 127, 127, 0.25);">
+          ${mode === "drive" ? `
+            <button class="settings-row settings-row--button settings-row--danger"
+              type="button" data-action="sign-out">
+              <span class="settings-row__text">
+                <span class="settings-row__title">${escapeHtml(t("profile.signOut"))}</span>
+                <span class="settings-row__desc">${escapeHtml(t("profile.signOutHint"))}</span>
+              </span>
+              <span class="settings-row__control" aria-hidden="true">${icon("arrow-right")}</span>
+            </button>
+          ` : `
+            <button class="settings-row settings-row--button" type="button" data-action="sign-in">
+              <span class="settings-row__text">
+                <span class="settings-row__title">${escapeHtml(t("profile.signIn"))}</span>
+                <span class="settings-row__desc">${escapeHtml(t("profile.signInHint"))}</span>
+              </span>
+              <span class="settings-row__control" aria-hidden="true">${icon("arrow-right")}</span>
+            </button>
+          `}
+        </div>
+      </section>
   `;
 }
 
