@@ -473,14 +473,6 @@ export function isOffline() {
   return Boolean(state?.offline);
 }
 
-export function getFileId() {
-  return state?.fileId || null;
-}
-
-export function getProfileSub() {
-  return state?.profileSub || "";
-}
-
 export function getMode() {
   return state?.mode || "guest";
 }
@@ -725,26 +717,6 @@ export function addSubcategory(category, name) {
   state.data.subcategories[parent] = [...list, value];
   touch();
   return { ok: true, value };
-}
-
-export function deleteSubcategory(category, name) {
-  if (!state) return { ok: false, reason: "missing" };
-
-  const parent = String(category || "").trim();
-  const value = String(name || "").trim();
-  const list = state.data.subcategories[parent] || [];
-  if (!list.includes(value)) return { ok: false, reason: "missing" };
-
-  for (const recipe of state.data.recipes) {
-    if (recipe.category === parent && recipe.subcategory === value) recipe.subcategory = "";
-  }
-
-  const remaining = list.filter((item) => item !== value);
-  if (remaining.length) state.data.subcategories[parent] = remaining;
-  else delete state.data.subcategories[parent];
-
-  touch();
-  return { ok: true };
 }
 
 /* ------------------------------ Saving --------------------------------- */

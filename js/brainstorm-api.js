@@ -12,7 +12,7 @@ const WORKER_URL = "https://pantry-live-proxy.pantry-live.workers.dev";
 const REQUEST_TIMEOUT_MS = 30000;
 const RECIPE_FIELDS = ["title", "category", "subcategory", "ingredients", "steps"];
 
-export class BrainstormError extends Error {
+class BrainstormError extends Error {
   constructor(code, details = {}) {
     super(code);
     this.name = "BrainstormError";
@@ -89,7 +89,7 @@ function outputContract(languageName) {
   ].join("\n");
 }
 
-export function buildRecipePrompt(answers = {}, categories = []) {
+function buildRecipePrompt(answers = {}, categories = []) {
   const isPantry = answers.source === "pantry";
   const languageName = getLanguageMeta().nativeName;
   const categoryList = (Array.isArray(categories) ? categories : [])

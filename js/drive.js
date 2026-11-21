@@ -11,7 +11,7 @@ import { expireSession, getAccessToken } from "./auth.js";
 const DRIVE_API = "https://www.googleapis.com/drive/v3";
 const UPLOAD_API = "https://www.googleapis.com/upload/drive/v3";
 
-export class DriveError extends Error {
+class DriveError extends Error {
   constructor(message, code = "drive_error", status = 0) {
     super(message);
     this.name = "DriveError";

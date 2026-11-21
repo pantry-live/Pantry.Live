@@ -14,7 +14,6 @@ import {
   t
 } from "../i18n.js";
 import {
-  ingredientPreview,
   matchesSearch,
   scaleIngredientLine,
   splitLines

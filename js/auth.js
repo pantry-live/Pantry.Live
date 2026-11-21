@@ -13,7 +13,7 @@
 const SCOPES = "openid profile https://www.googleapis.com/auth/drive.file";
 const SESSION_KEY = "pantry.session.v1";
 
-export class AuthError extends Error {
+class AuthError extends Error {
   constructor(message, code = "auth_error") {
     super(message);
     this.name = "AuthError";
@@ -237,7 +237,7 @@ export function restoreExistingSession() {
   return getSession();
 }
 
-export function getSession() {
+function getSession() {
   if (!accessToken || !expiresAt || Date.now() >= expiresAt) return null;
   return { accessToken, expiresAt, profile };
 }
@@ -267,10 +267,6 @@ export function expireSession() {
   } catch {
     /* Ignore. */
   }
-}
-
-export function clearSession() {
-  expireSession();
 }
 
 /** Revoke the token when possible and always clear the local session. */

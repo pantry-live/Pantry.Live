@@ -52,10 +52,6 @@ export async function releaseWakeLock() {
   await release();
 }
 
-export function isWakeLockSupported() {
-  return supported();
-}
-
 if (typeof document !== "undefined") {
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "visible" && wantsLock) acquire();

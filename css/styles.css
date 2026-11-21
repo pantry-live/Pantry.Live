@@ -476,6 +476,7 @@ a {
   background: var(--surface);
   border-color: var(--border-strong);
   color: var(--text);
+  align-items: left;
 }
 
 .button--secondary:hover {
@@ -632,6 +633,14 @@ a {
   min-height: 148px;
   resize: vertical;
   line-height: 1.6;
+}
+
+.textarea--short {
+  min-height: 108px;
+  max-height: 128px;
+  resize: none;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .select {
@@ -2409,7 +2418,19 @@ a {
 
 .prompt-box__actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
+}
+
+.prompt-box__status {
+  margin: 0;
+  text-align: left;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--accent-strong);
+}
+
+.prompt-box__status--error {
+  color: var(--danger);
 }
 
 .prompt-preview {

@@ -94,7 +94,7 @@ function parseQuantity(text) {
 }
 
 /** Format a numeric quantity using common fractions and the UI locale. */
-export function formatQuantity(value) {
+function formatQuantity(value) {
   if (!Number.isFinite(value)) return String(value);
   if (Math.abs(value) < 1e-9) return "0";
 
@@ -130,19 +130,6 @@ export function formatQuantity(value) {
   }
 }
 
-/** Parse a leading quantity without changing the line. */
-export function parseLeadingQuantity(line) {
-  const text = String(line || "");
-  const match = text.match(LEADING_QTY);
-  if (!match) return null;
-  return {
-    prefix: match[1] || "",
-    first: parseQuantity(match[2]),
-    second: match[3] ? parseQuantity(match[3]) : null,
-    rest: text.slice(match[0].length)
-  };
-}
-
 /** Scale one ingredient line by a factor. */
 export function scaleIngredientLine(line, factor) {
   const text = String(line || "");
@@ -166,18 +153,7 @@ export function scaleIngredientLine(line, factor) {
   return `${prefix}${replacement}${text.slice(match[0].length)}`;
 }
 
-/** Scale all ingredient lines and return an array of display strings. */
-export function scaleIngredients(text, factor) {
-  return splitLines(text).map((line) => scaleIngredientLine(line, factor));
-}
-
-/** Short two-line preview for recipe cards. */
-export function ingredientPreview(recipe, maxLines = 2) {
-  const lines = splitLines(recipe?.ingredients);
-  return lines.slice(0, maxLines).join(" · ");
-}
-
-export function normalizeSearchText(text) {
+function normalizeSearchText(text) {
   return String(text || "")
     .toLowerCase()
     .normalize("NFD")
@@ -190,9 +166,4 @@ export function matchesSearch(recipe, query) {
   if (!terms.length) return true;
   const haystack = normalizeSearchText(`${recipe?.title || ""}\n${recipe?.ingredients || ""}`);
   return terms.every((term) => haystack.includes(term));
-}
-
-export function getScaleFactor(servings, baseServings = 2) {
-  const base = Number(baseServings) || 2;
-  return Math.max(1, Number(servings) || 1) / base;
 }

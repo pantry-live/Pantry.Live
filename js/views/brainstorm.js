@@ -653,21 +653,18 @@ function renderPrompt(root, answers) {
         <p class="brainstorm-card__text">${escapeHtml(t("brainstorm.promptExplain"))}</p>
 
         <div class="prompt-box">
-          <label class="field__label" for="brainstorm-prompt">
-            ${escapeHtml(t("brainstorm.promptLabel"))}
-          </label>
-          <textarea class="textarea prompt-box__text" id="brainstorm-prompt"
-            data-ref="prompt" rows="14" readonly>${escapeHtml(prompt)}</textarea>
           <div class="prompt-box__actions">
-            <button class="button button--secondary" type="button" data-action="copy">
+            <button class="button" type="button" data-action="copy">
               ${escapeHtml(t("brainstorm.copyBtn"))}
             </button>
           </div>
+          <p class="prompt-box__status" data-ref="copy-status" role="status"
+            aria-live="polite" hidden></p>
         </div>
 
         <label class="field">
           <span class="field__label">${escapeHtml(t("brainstorm.pasteLabel"))}</span>
-          <textarea class="textarea" data-ref="paste" rows="10"
+          <textarea class="textarea textarea--short" data-ref="paste" rows="4"
             placeholder="${escapeHtml(t("brainstorm.pastePlaceholder"))}"></textarea>
         </label>
 
@@ -700,6 +697,23 @@ function renderPrompt(root, answers) {
   const preview = root.querySelector('[data-ref="preview"]');
   const error = root.querySelector('[data-ref="error"]');
   const saveButton = root.querySelector('[data-action="save"]');
+  const copyStatus = root.querySelector('[data-ref="copy-status"]');
+  let copyStatusTimer = 0;
+
+  const showCopyStatus = (message, isError = false) => {
+    if (!copyStatus) return;
+
+    window.clearTimeout(copyStatusTimer);
+    copyStatus.textContent = message;
+    copyStatus.classList.toggle("prompt-box__status--error", isError);
+    copyStatus.hidden = false;
+
+    copyStatusTimer = window.setTimeout(() => {
+      copyStatus.hidden = true;
+      copyStatus.textContent = "";
+      copyStatus.classList.remove("prompt-box__status--error");
+    }, 2000);
+  };
 
   const updatePreview = () => {
     const raw = String(paste?.value || "").trim();
@@ -732,8 +746,9 @@ function renderPrompt(root, answers) {
 
   paste?.addEventListener("input", updatePreview);
 
-  root.querySelector('[data-action="copy"]')?.addEventListener("click", () => {
-    copyPrompt(root);
+  root.querySelector('[data-action="copy"]')?.addEventListener("click", async () => {
+    const copied = await copyPrompt(prompt);
+    showCopyStatus(t(copied ? "brainstorm.copied" : "brainstorm.copyFailed"), !copied);
   });
 
   saveButton?.addEventListener("click", () => {
@@ -755,27 +770,12 @@ function renderPrompt(root, answers) {
   });
 }
 
-async function copyPrompt(root) {
-  const textarea = root.querySelector('[data-ref="prompt"]');
-  if (!textarea) return;
-
+async function copyPrompt(prompt) {
   try {
-    await navigator.clipboard.writeText(textarea.value);
-    toast(t("brainstorm.copiedToast"), "success");
+    await navigator.clipboard.writeText(prompt);
+    return true;
   } catch {
-    textarea.focus();
-    textarea.select();
-
-    try {
-      if (document.execCommand("copy")) {
-        toast(t("brainstorm.copiedToast"), "success");
-        return;
-      }
-    } catch {
-      /* Fall through. */
-    }
-
-    toast(t("brainstorm.copyFailedToast"), "error");
+    return false;
   }
 }
 

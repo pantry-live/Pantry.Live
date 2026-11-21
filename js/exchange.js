@@ -22,7 +22,7 @@ import { createZip } from "./zip.js";
 
 const INVALID_FILENAME_CHARS = /[\\/:*?"<>|\u0000-\u001f]/g;
 
-export function formatRecipe(recipe) {
+function formatRecipe(recipe) {
   return [
     `Title: ${recipe.title}`,
     `Category: ${recipe.category || ""}`,
@@ -58,7 +58,7 @@ function uniqueFileName(base, used) {
   return name;
 }
 
-export function buildRecipeZip(recipes) {
+function buildRecipeZip(recipes) {
   const used = new Set();
   const files = recipes.map((recipe) => ({
     name: uniqueFileName(safeBaseName(recipe.title), used),

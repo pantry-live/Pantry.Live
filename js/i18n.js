@@ -51,29 +51,16 @@ const STRINGS = {
       close: "Sluiten",
       cancel: "Annuleren",
       save: "Opslaan",
-      saving: "Opslaan…",
       add: "Toevoegen",
-      edit: "Bewerken",
       delete: "Verwijderen",
-      rename: "Hernoemen",
-      continue: "Doorgaan",
-      skip: "Overslaan",
       next: "Volgende",
       done: "Klaar",
-      retry: "Opnieuw proberen",
-      confirm: "Bevestigen",
-      loading: "Laden…",
       all: "Alles",
-      search: "Zoeken",
-      clear: "Wissen",
       error: "Er ging iets mis.",
       offline: "Je bent offline. Je ziet de laatst bewaarde gegevens.",
       savedLocally: "Lokaal bewaard. We proberen het later opnieuw.",
       sessionExpired: "Je sessie is verlopen.",
-      reauthenticate: "Opnieuw inloggen",
-      signOut: "Uitloggen",
-      unsupported: "Niet ondersteund in deze browser.",
-      unknownError: "Onbekende fout."
+      reauthenticate: "Opnieuw inloggen"
     },
     nav: {
       cooking: "Koken",
@@ -85,10 +72,8 @@ const STRINGS = {
     splash: {
       tapToStart: "Tik om te beginnen",
       tapToContinue: "Tik om verder te gaan",
-      signIn: "Inloggen met Google",
       configMissing: "Google-inloggen is niet ingesteld. Je kunt Pantry lokaal gebruiken. Vul voor Drive een Google Client ID in config.js in.",
       privacyTitle: "Jouw privacy",
-      signingIn: "Bezig met inloggen…",
       loadingRecipes: "Recepten laden…",
       gisUnavailable: "Google-inloggen kon niet worden geladen. Controleer je internetverbinding en herlaad de pagina.",
       retry: "Opnieuw proberen"
@@ -113,7 +98,6 @@ const STRINGS = {
       brainstormText: "Maak een prompt voor je AI-chat of laat Google een recept voorstellen."
     },
     tutorial: {
-      title: "Zo werkt Pantry",
       step1Title: "Koken",
       step1Text: "Zoek op titel of ingrediënt, filter met categorieën en voeg je eigen recepten toe.",
       step2Title: "Porties",
@@ -214,7 +198,6 @@ const STRINGS = {
       tapHint: "Tik om verder te gaan",
       voiceHint: "Of zeg ‘volgende’ of ‘terug’",
       exitCooking: "Kookmodus sluiten",
-      keepAwake: "Scherm blijft aan",
       scaleNote: "Alleen getallen aan het begin van een ingrediënt worden geschaald.",
       doneCooking: "Klaar"
     },
@@ -298,12 +281,14 @@ const STRINGS = {
       summaryMaxTime: "Maximale tijd",
       summaryContinent: "Continent",
       summaryCountry: "Land",
-      copyPromptBtn: "Prompt kopiëren",
+      copyPromptBtn: "Zie prompt",
       promptEyebrow: "Jouw prompt",
       promptTitle: "Kopieer de prompt",
-      promptExplain: "Kopieer de prompt hieronder en plak hem in de AI-chat van je keuze. Vraag om één recept. Plak het antwoord daarna in het vak hieronder.",
+      promptExplain: "Tik op de knop om de prompt te kopiëren en plak hem in de AI-chat van je keuze. Vraag om één recept. Plak het antwoord daarna in het vak hieronder.",
       promptLabel: "Prompt",
       copyBtn: "Kopiëren",
+      copied: "Gekopieerd",
+      copyFailed: "Kopiëren mislukt",
       copiedToast: "Prompt gekopieerd.",
       copyFailedToast: "Kopiëren lukte niet. Selecteer de tekst en kopieer handmatig.",
       pasteLabel: "Geplakt antwoord van de AI",
@@ -367,10 +352,8 @@ const STRINGS = {
       languageHint: "De app is beschikbaar in het Nederlands, Duits en Engels.",
       tutorial: "Rondleiding",
       tutorialHint: "Bekijk de uitleg opnieuw.",
-      showTutorial: "Toon rondleiding",
       manual: "Gebruikershandleiding",
       manualHint: "Lees hoe de app werkt en waar je recepten worden bewaard.",
-      openManual: "Open handleiding",
       exportTitle: "Recepten exporteren",
       exportHint: "Download alle recepten als ZIP met tekstbestanden.",
       exportDone: "Recepten geëxporteerd.",
@@ -429,22 +412,12 @@ const STRINGS = {
       version: "Pantry 1.0 — statische receptenapp"
     },
     errors: {
-      authUnavailable: "Google-inloggen is niet beschikbaar. Controleer je internetverbinding en herlaad de pagina.",
       authFailed: "Inloggen is niet gelukt.",
       authDenied: "Inloggen is geannuleerd.",
-      popupClosed: "Het inlogvenster is gesloten.",
       driveLoad: "Je recepten konden niet worden geladen.",
-      driveSave: "Je wijzigingen konden niet worden opgeslagen.",
-      drivePermission: "Pantry heeft geen toegang tot de opslag in Google Drive.",
-      noCache: "Er is geen lokale kopie beschikbaar.",
       localSave: "Je wijzigingen konden niet in deze browser worden opgeslagen.",
       sessionExpired: "Je sessie is verlopen. Log opnieuw in om verder te gaan.",
-      recipeNotFound: "Recept niet gevonden.",
-      config: "De configuratie ontbreekt. Vul je Google Client ID in config.js in.",
-      storageCorrupt: "De gegevens in Google Drive zijn niet leesbaar.",
-      micUnsupported: "Spraakherkenning wordt niet ondersteund in deze browser.",
-      speech: "Spraakherkenning is gestopt.",
-      noData: "Er zijn geen gegevens beschikbaar."
+      storageCorrupt: "De gegevens in Google Drive zijn niet leesbaar."
     }
   },
 
@@ -454,29 +427,16 @@ const STRINGS = {
       close: "Close",
       cancel: "Cancel",
       save: "Save",
-      saving: "Saving…",
       add: "Add",
-      edit: "Edit",
       delete: "Delete",
-      rename: "Rename",
-      continue: "Continue",
-      skip: "Skip",
       next: "Next",
       done: "Done",
-      retry: "Try again",
-      confirm: "Confirm",
-      loading: "Loading…",
       all: "All",
-      search: "Search",
-      clear: "Clear",
       error: "Something went wrong.",
       offline: "You are offline. Showing the last saved data.",
       savedLocally: "Saved locally. We’ll try again later.",
       sessionExpired: "Your session has expired.",
-      reauthenticate: "Sign in again",
-      signOut: "Sign out",
-      unsupported: "Not supported in this browser.",
-      unknownError: "Unknown error."
+      reauthenticate: "Sign in again"
     },
     nav: {
       cooking: "Cooking",
@@ -488,10 +448,8 @@ const STRINGS = {
     splash: {
       tapToStart: "Tap to start",
       tapToContinue: "Tap to continue",
-      signIn: "Sign in with Google",
       configMissing: "Google sign-in is not configured. You can use Pantry locally. Add a Google Client ID to config.js for Drive.",
       privacyTitle: "Your privacy",
-      signingIn: "Signing in…",
       loadingRecipes: "Loading recipes…",
       gisUnavailable: "Google sign-in could not be loaded. Check your internet connection and reload the page.",
       retry: "Try again"
@@ -516,7 +474,6 @@ const STRINGS = {
       brainstormText: "Build a prompt for your AI chat or let Google suggest a recipe."
     },
     tutorial: {
-      title: "How Pantry works",
       step1Title: "Cooking",
       step1Text: "Search by title or ingredient, filter by category, and add your own recipes.",
       step2Title: "Servings",
@@ -617,7 +574,6 @@ const STRINGS = {
       tapHint: "Tap to continue",
       voiceHint: "Or say ‘next’ or ‘back’",
       exitCooking: "Exit cooking mode",
-      keepAwake: "Screen stays awake",
       scaleNote: "Only numbers at the start of an ingredient are scaled.",
       doneCooking: "Done"
     },
@@ -701,12 +657,14 @@ const STRINGS = {
       summaryMaxTime: "Maximum time",
       summaryContinent: "Continent",
       summaryCountry: "Country",
-      copyPromptBtn: "Copy prompt",
+      copyPromptBtn: "Get prompt",
       promptEyebrow: "Your prompt",
       promptTitle: "Copy the prompt",
-      promptExplain: "Copy the prompt below and paste it into the AI chat of your choice. Ask for one recipe. Then paste the reply into the box below.",
+      promptExplain: "Tap the button to copy the prompt, then paste it into the AI chat of your choice. Ask for one recipe. Then paste the reply into the box below.",
       promptLabel: "Prompt",
       copyBtn: "Copy",
+      copied: "Copied",
+      copyFailed: "Could not copy",
       copiedToast: "Prompt copied.",
       copyFailedToast: "Could not copy. Select the text and copy it manually.",
       pasteLabel: "Pasted AI reply",
@@ -770,10 +728,8 @@ const STRINGS = {
       languageHint: "The app is available in Dutch, German and English.",
       tutorial: "Tutorial",
       tutorialHint: "View the walkthrough again.",
-      showTutorial: "Show tutorial",
       manual: "User manual",
       manualHint: "Read how the app works and where your recipes are stored.",
-      openManual: "Open manual",
       exportTitle: "Export recipes",
       exportHint: "Download all recipes as a ZIP of text files.",
       exportDone: "Recipes exported.",
@@ -832,22 +788,12 @@ const STRINGS = {
       version: "Pantry 1.0 — static recipe app"
     },
     errors: {
-      authUnavailable: "Google sign-in is unavailable. Check your internet connection and reload the page.",
       authFailed: "Sign-in failed.",
       authDenied: "Sign-in was cancelled.",
-      popupClosed: "The sign-in window was closed.",
       driveLoad: "Your recipes could not be loaded.",
-      driveSave: "Your changes could not be saved.",
-      drivePermission: "Pantry does not have access to storage in Google Drive.",
-      noCache: "No local copy is available.",
       localSave: "Your changes could not be saved in this browser.",
       sessionExpired: "Your session has expired. Sign in again to continue.",
-      recipeNotFound: "Recipe not found.",
-      config: "Configuration is missing. Add your Google Client ID to config.js.",
-      storageCorrupt: "The data in Google Drive could not be read.",
-      micUnsupported: "Voice recognition is not supported in this browser.",
-      speech: "Voice recognition stopped.",
-      noData: "No data is available."
+      storageCorrupt: "The data in Google Drive could not be read."
     }
   },
 
@@ -857,29 +803,16 @@ const STRINGS = {
       close: "Schließen",
       cancel: "Abbrechen",
       save: "Speichern",
-      saving: "Speichern…",
       add: "Hinzufügen",
-      edit: "Bearbeiten",
       delete: "Löschen",
-      rename: "Umbenennen",
-      continue: "Weiter",
-      skip: "Überspringen",
       next: "Weiter",
       done: "Fertig",
-      retry: "Erneut versuchen",
-      confirm: "Bestätigen",
-      loading: "Laden…",
       all: "Alle",
-      search: "Suchen",
-      clear: "Leeren",
       error: "Etwas ist schiefgelaufen.",
       offline: "Du bist offline. Die zuletzt gespeicherten Daten werden angezeigt.",
       savedLocally: "Lokal gespeichert. Wir versuchen es später erneut.",
       sessionExpired: "Deine Sitzung ist abgelaufen.",
-      reauthenticate: "Erneut anmelden",
-      signOut: "Abmelden",
-      unsupported: "In diesem Browser nicht unterstützt.",
-      unknownError: "Unbekannter Fehler."
+      reauthenticate: "Erneut anmelden"
     },
     nav: {
       cooking: "Kochen",
@@ -891,10 +824,8 @@ const STRINGS = {
     splash: {
       tapToStart: "Tippen zum Starten",
       tapToContinue: "Tippen zum Fortfahren",
-      signIn: "Mit Google anmelden",
       configMissing: "Google-Anmeldung ist nicht eingerichtet. Du kannst Pantry lokal nutzen. Für Drive füge eine Google Client-ID in config.js ein.",
       privacyTitle: "Deine Privatsphäre",
-      signingIn: "Anmelden…",
       loadingRecipes: "Rezepte laden…",
       gisUnavailable: "Google-Anmeldung konnte nicht geladen werden. Prüfe deine Internetverbindung und lade die Seite neu.",
       retry: "Erneut versuchen"
@@ -919,7 +850,6 @@ const STRINGS = {
       brainstormText: "Erstelle einen Prompt für deinen KI-Chat oder lass Google ein Rezept vorschlagen."
     },
     tutorial: {
-      title: "So funktioniert Pantry",
       step1Title: "Kochen",
       step1Text: "Suche nach Titel oder Zutat, filtere nach Kategorie und füge eigene Rezepte hinzu.",
       step2Title: "Portionen",
@@ -1020,7 +950,6 @@ const STRINGS = {
       tapHint: "Tippen, um fortzufahren",
       voiceHint: "Oder sage ‚weiter‘ oder ‚zurück‘",
       exitCooking: "Kochmodus schließen",
-      keepAwake: "Bildschirm bleibt an",
       scaleNote: "Nur Zahlen am Anfang einer Zutat werden skaliert.",
       doneCooking: "Fertig"
     },
@@ -1104,12 +1033,14 @@ const STRINGS = {
       summaryMaxTime: "Maximale Zeit",
       summaryContinent: "Kontinent",
       summaryCountry: "Land",
-      copyPromptBtn: "Prompt kopieren",
+      copyPromptBtn: "Erhalte prompt",
       promptEyebrow: "Dein Prompt",
       promptTitle: "Prompt kopieren",
-      promptExplain: "Kopiere den Prompt unten und füge ihn in den KI-Chat deiner Wahl ein. Bitte um ein Rezept. Füge die Antwort danach in das Feld unten ein.",
+      promptExplain: "Tippe auf die Schaltfläche, um den Prompt zu kopieren, und füge ihn in den KI-Chat deiner Wahl ein. Bitte um ein Rezept. Füge die Antwort danach in das Feld unten ein.",
       promptLabel: "Prompt",
       copyBtn: "Kopieren",
+      copied: "Kopiert",
+      copyFailed: "Kopieren fehlgeschlagen",
       copiedToast: "Prompt kopiert.",
       copyFailedToast: "Kopieren fehlgeschlagen. Markiere den Text und kopiere ihn manuell.",
       pasteLabel: "Eingefügte KI-Antwort",
@@ -1173,10 +1104,8 @@ const STRINGS = {
       languageHint: "Die App ist auf Deutsch, Niederländisch und Englisch verfügbar.",
       tutorial: "Einführung",
       tutorialHint: "Sieh dir die Erklärung erneut an.",
-      showTutorial: "Einführung anzeigen",
       manual: "Benutzerhandbuch",
       manualHint: "Lies, wie die App funktioniert und wo deine Rezepte gespeichert werden.",
-      openManual: "Handbuch öffnen",
       exportTitle: "Rezepte exportieren",
       exportHint: "Lade alle Rezepte als ZIP mit Textdateien herunter.",
       exportDone: "Rezepte exportiert.",
@@ -1235,22 +1164,12 @@ const STRINGS = {
       version: "Pantry 1.0 — statische Rezept-App"
     },
     errors: {
-      authUnavailable: "Google-Anmeldung ist nicht verfügbar. Prüfe deine Internetverbindung und lade die Seite neu.",
       authFailed: "Anmeldung fehlgeschlagen.",
       authDenied: "Anmeldung abgebrochen.",
-      popupClosed: "Das Anmeldefenster wurde geschlossen.",
       driveLoad: "Deine Rezepte konnten nicht geladen werden.",
-      driveSave: "Deine Änderungen konnten nicht gespeichert werden.",
-      drivePermission: "Pantry hat keinen Zugriff auf den Speicher in Google Drive.",
-      noCache: "Es ist keine lokale Kopie verfügbar.",
       localSave: "Deine Änderungen konnten in diesem Browser nicht gespeichert werden.",
       sessionExpired: "Deine Sitzung ist abgelaufen. Melde dich erneut an, um fortzufahren.",
-      recipeNotFound: "Rezept nicht gefunden.",
-      config: "Die Konfiguration fehlt. Füge deine Google Client-ID in config.js ein.",
-      storageCorrupt: "Die Daten in Google Drive konnten nicht gelesen werden.",
-      micUnsupported: "Spracherkennung wird in diesem Browser nicht unterstützt.",
-      speech: "Spracherkennung wurde beendet.",
-      noData: "Es sind keine Daten verfügbar."
+      storageCorrupt: "Die Daten in Google Drive konnten nicht gelesen werden."
     }
   }
 };
@@ -1259,14 +1178,14 @@ const STRINGS = {
  * Static content structures
  * ---------------------------------------------------------------------- */
 
-export const TUTORIAL_STEPS = [
+const TUTORIAL_STEPS = [
   { icon: "pot", title: "tutorial.step1Title", text: "tutorial.step1Text" },
   { icon: "user", title: "tutorial.step2Title", text: "tutorial.step2Text" },
   { icon: "play", title: "tutorial.step3Title", text: "tutorial.step3Text" },
   { icon: "hat", title: "tutorial.step4Title", text: "tutorial.step4Text" }
 ];
 
-export const MANUAL_SECTIONS = [
+const MANUAL_SECTIONS = [
   { id: "intro", title: "manual.introTitle", body: "manual.introBody" },
   { id: "start", title: "manual.startTitle", body: "manual.startBody" },
   { id: "data", title: "manual.dataTitle", body: "manual.dataBody" },
@@ -1340,30 +1259,6 @@ export function t(key, variables = {}) {
   return value.replace(/\{(\w+)\}/g, (_, name) => (
     variables[name] !== undefined ? String(variables[name]) : `{${name}}`
   ));
-}
-
-export function formatNumber(value) {
-  const meta = getLanguageMeta();
-  try {
-    return new Intl.NumberFormat(meta.locale, { maximumFractionDigits: 2 }).format(value);
-  } catch {
-    return String(value);
-  }
-}
-
-export function formatDate(isoDate) {
-  const date = new Date(isoDate);
-  if (Number.isNaN(date.getTime())) return "";
-  const meta = getLanguageMeta();
-  try {
-    return new Intl.DateTimeFormat(meta.locale, {
-      day: "numeric",
-      month: "long",
-      year: "numeric"
-    }).format(date);
-  } catch {
-    return date.toLocaleDateString();
-  }
 }
 
 export function servingsLabel(count) {

@@ -100,7 +100,7 @@ async function prepareAuth() {
   try {
     await auth.init();
   } catch {
-    /* Sign-in reports its own error from Profile. */
+    /* Sign-in reports its own error from Settings. */
   }
 }
 
