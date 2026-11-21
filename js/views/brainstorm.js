@@ -654,12 +654,10 @@ function renderPrompt(root, answers) {
 
         <div class="prompt-box">
           <div class="prompt-box__actions">
-            <button class="button" type="button" data-action="copy">
+            <button class="button" type="button" data-action="copy" data-ref="copy-button">
               ${escapeHtml(t("brainstorm.copyBtn"))}
             </button>
           </div>
-          <p class="prompt-box__status" data-ref="copy-status" role="status"
-            aria-live="polite" hidden></p>
         </div>
 
         <label class="field">
@@ -697,21 +695,19 @@ function renderPrompt(root, answers) {
   const preview = root.querySelector('[data-ref="preview"]');
   const error = root.querySelector('[data-ref="error"]');
   const saveButton = root.querySelector('[data-action="save"]');
-  const copyStatus = root.querySelector('[data-ref="copy-status"]');
+  const copyButton = root.querySelector('[data-ref="copy-button"]');
   let copyStatusTimer = 0;
 
   const showCopyStatus = (message, isError = false) => {
-    if (!copyStatus) return;
+    if (!copyButton) return;
 
     window.clearTimeout(copyStatusTimer);
-    copyStatus.textContent = message;
-    copyStatus.classList.toggle("prompt-box__status--error", isError);
-    copyStatus.hidden = false;
+    copyButton.textContent = message;
+    copyButton.classList.toggle("button--danger", isError);
 
     copyStatusTimer = window.setTimeout(() => {
-      copyStatus.hidden = true;
-      copyStatus.textContent = "";
-      copyStatus.classList.remove("prompt-box__status--error");
+      copyButton.textContent = t("brainstorm.copyBtn");
+      copyButton.classList.remove("button--danger");
     }, 2000);
   };
 

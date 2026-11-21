@@ -1775,7 +1775,17 @@ a {
 }
 
 .settings-tile + .settings-tile {
-  border-left: 1px solid var(--border);
+  position: relative;
+}
+
+.settings-tile + .settings-tile::before {
+  content: "";
+  position: absolute;
+  top: 14px;
+  bottom: 14px;
+  left: 0;
+  width: 1px;
+  background: var(--border);
 }
 
 .settings-tile:hover {
@@ -2421,16 +2431,8 @@ a {
   justify-content: flex-start;
 }
 
-.prompt-box__status {
-  margin: 0;
-  text-align: left;
-  font-size: 13px;
-  line-height: 1.4;
-  color: var(--accent-strong);
-}
-
-.prompt-box__status--error {
-  color: var(--danger);
+.prompt-box__actions .button {
+  min-width: 9rem;
 }
 
 .prompt-preview {
