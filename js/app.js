@@ -118,7 +118,10 @@ function shouldShowIntro() {
 function showSplashFinalState(text) {
   elements.introTyped.textContent = text;
   elements.introCursor.setAttribute("data-done", "");
+  elements.splash.classList.add("no-anim");
   elements.splash.classList.remove("is-intro");
+  void elements.splash.offsetWidth;
+  elements.splash.classList.remove("no-anim");
   setSplashDisabled(false);
   resetSplashHint();
 }
@@ -160,7 +163,10 @@ function showReturningSplash() {
   elements.introTyped.textContent = t("intro.slogan");
   elements.introFull.textContent = t("intro.slogan");
   elements.introCursor.setAttribute("data-done", "");
+  elements.splash.classList.add("no-anim");
   elements.splash.classList.remove("is-intro");
+  void elements.splash.offsetWidth;
+  elements.splash.classList.remove("no-anim");
   setSplashDisabled(false);
   resetSplashHint();
 }

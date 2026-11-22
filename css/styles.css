@@ -387,7 +387,7 @@ a {
   background: transparent;
   color: var(--text-muted);
   font-size: 11px;
-  font-weight: 620;
+  font-weight: 600;
   letter-spacing: 0.01em;
   transition: color 0.15s, background 0.15s;
 }
@@ -474,7 +474,7 @@ body.keyboard-open .tabbar {
   background: var(--accent);
   color: var(--accent-contrast);
   font-size: 16px;
-  font-weight: 650;
+  font-weight: 600;
   line-height: 1.2;
   transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.1s;
 }
@@ -590,7 +590,7 @@ body.keyboard-open .tabbar {
 
 .section-title {
   font-size: 16px;
-  font-weight: 680;
+  font-weight: 600;
   letter-spacing: -0.01em;
 }
 
@@ -616,7 +616,7 @@ body.keyboard-open .tabbar {
 
 .field__label {
   font-size: 13px;
-  font-weight: 650;
+  font-weight: 600;
   color: var(--text-muted);
 }
 
@@ -767,7 +767,7 @@ body.keyboard-open .tabbar {
   background: var(--surface);
   color: var(--text-muted);
   font-size: 13.5px;
-  font-weight: 620;
+  font-weight: 600;
   white-space: nowrap;
   transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
@@ -863,7 +863,7 @@ body.keyboard-open .tabbar {
 
 .recipe-card__title {
   font-size: 17px;
-  font-weight: 670;
+  font-weight: 600;
   letter-spacing: -0.015em;
   line-height: 1.3;
 }
@@ -884,7 +884,7 @@ body.keyboard-open .tabbar {
   background: var(--surface-soft);
   color: var(--text-muted);
   font-size: 11.5px;
-  font-weight: 650;
+  font-weight: 600;
   white-space: nowrap;
 }
 
@@ -951,7 +951,7 @@ body.keyboard-open .tabbar {
 .selection-bar__count {
   color: var(--text-muted);
   font-size: 13px;
-  font-weight: 650;
+  font-weight: 600;
 }
 
 .selection-bar__actions {
@@ -1009,7 +1009,7 @@ body.keyboard-open .tabbar {
 
 .empty-state__title {
   font-size: 18px;
-  font-weight: 670;
+  font-weight: 600;
   letter-spacing: -0.01em;
 }
 
@@ -1068,7 +1068,7 @@ body.keyboard-open .tabbar {
 .servings__label {
   color: var(--text-muted);
   font-size: 12px;
-  font-weight: 650;
+  font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -1178,7 +1178,7 @@ body.keyboard-open .tabbar {
 
 .cook-toggle__title {
   font-size: 15px;
-  font-weight: 650;
+  font-weight: 600;
 }
 
 .cook-toggle__text {
@@ -1286,7 +1286,7 @@ body.keyboard-open .tabbar {
   background: var(--accent);
   color: var(--accent-contrast);
   font-size: 15px;
-  font-weight: 650;
+  font-weight: 600;
   text-align: left;
 }
 
@@ -1326,7 +1326,7 @@ body.keyboard-open .tabbar {
 .cooking-overlay__progress {
   color: var(--text-muted);
   font-size: 13px;
-  font-weight: 650;
+  font-weight: 600;
   letter-spacing: 0.02em;
 }
 
@@ -1468,7 +1468,7 @@ body.keyboard-open .tabbar {
 .cooking-overlay__text {
   max-width: 780px;
   font-size: clamp(28px, 8vw, 52px);
-  font-weight: 680;
+  font-weight: 600;
   letter-spacing: -0.035em;
   line-height: 1.16;
   text-wrap: balance;
@@ -1700,7 +1700,7 @@ body.keyboard-open .tabbar {
 .welcome-tab__title {
   display: block;
   font-size: 16px;
-  font-weight: 670;
+  font-weight: 600;
   letter-spacing: -0.01em;
 }
 
@@ -1832,7 +1832,7 @@ body.keyboard-open .tabbar {
 
 .modal__title {
   font-size: 20px;
-  font-weight: 690;
+  font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.25;
 }
@@ -1946,7 +1946,7 @@ body.keyboard-open .tabbar {
 .settings-row__title {
   display: block;
   font-size: 14.5px;
-  font-weight: 650;
+  font-weight: 600;
 }
 
 .settings-row__desc {
@@ -2058,7 +2058,7 @@ body.keyboard-open .tabbar {
 
 .settings-tile__title {
   font-size: 14.5px;
-  font-weight: 650;
+  font-weight: 600;
   line-height: 1.3;
 }
 
@@ -2072,7 +2072,7 @@ body.keyboard-open .tabbar {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-weight: 650;
+  font-weight: 600;
 }
 
 .account-name .icon {
@@ -2094,7 +2094,7 @@ body.keyboard-open .tabbar {
 
 .manual__section h2 {
   font-size: 17px;
-  font-weight: 680;
+  font-weight: 600;
   letter-spacing: -0.015em;
 }
 
@@ -2125,7 +2125,7 @@ body.keyboard-open .tabbar {
 
 .manual__title {
   font-size: 20px;
-  font-weight: 690;
+  font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.25;
 }
@@ -2160,7 +2160,7 @@ body.keyboard-open .tabbar {
 
 .placeholder__title {
   font-size: 20px;
-  font-weight: 680;
+  font-weight: 600;
   letter-spacing: -0.02em;
 }
 
@@ -2246,7 +2246,7 @@ body.keyboard-open .tabbar {
 
 .error-card__title {
   font-size: 16px;
-  font-weight: 680;
+  font-weight: 600;
   color: var(--danger);
 }
 
@@ -2440,7 +2440,7 @@ body.keyboard-open .tabbar {
 
 .brainstorm-card__title {
   font-size: 20px;
-  font-weight: 680;
+  font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1.25;
 }
@@ -2489,7 +2489,7 @@ body.keyboard-open .tabbar {
 .brainstorm-summary__label {
   color: var(--text-faint);
   font-size: 12px;
-  font-weight: 650;
+  font-weight: 600;
   letter-spacing: 0.03em;
   text-transform: uppercase;
 }
@@ -2543,7 +2543,7 @@ body.keyboard-open .tabbar {
   margin-top: 6px;
   color: var(--accent-strong);
   font-size: 12px;
-  font-weight: 680;
+  font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   overflow-wrap: anywhere;
@@ -2556,7 +2556,7 @@ body.keyboard-open .tabbar {
 
 .brainstorm-result__heading {
   font-size: 15px;
-  font-weight: 680;
+  font-weight: 600;
   line-height: 1.35;
 }
 
@@ -2602,7 +2602,7 @@ body.keyboard-open .tabbar {
   background: transparent;
   color: var(--accent-strong);
   font-size: 13.5px;
-  font-weight: 650;
+  font-weight: 600;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -2620,7 +2620,7 @@ body.keyboard-open .tabbar {
 .wizard__progress {
   color: var(--accent-strong);
   font-size: 12px;
-  font-weight: 680;
+  font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -2719,7 +2719,7 @@ body.keyboard-open .tabbar {
 .prompt-preview__title {
   color: var(--accent-strong);
   font-size: 12px;
-  font-weight: 680;
+  font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -2794,4 +2794,9 @@ body.keyboard-open .tabbar {
     transition: none;
     animation: none;
   }
+}
+
+.splash.no-anim .splash__button,
+.splash.no-anim .splash__privacy-link {
+  transition: none;
 }
