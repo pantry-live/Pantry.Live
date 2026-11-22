@@ -500,6 +500,10 @@ export function getMode() {
   return state?.mode || "guest";
 }
 
+export function hasLocalData() {
+  return Boolean(readGuest());
+}
+
 /* ----------------------------- Mutations ------------------------------- */
 
 function touch() {

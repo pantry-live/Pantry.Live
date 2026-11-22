@@ -87,11 +87,18 @@ function applySplashLabels() {
   if (elements.splashPrivacyTitle) {
     elements.splashPrivacyTitle.textContent = t("splash.privacyTitle");
   }
-  elements.splashButton?.setAttribute("aria-label", t("splash.tapToStart"));
+    elements.splashButton?.setAttribute(
+    "aria-label",
+    t(hasReturningUser() ? "splash.tapToContinue" : "splash.tapToStart")
+  );
+}
+
+function hasReturningUser() {
+  return auth.hasSession() || store.hasLocalData();
 }
 
 function resetSplashHint() {
-  setSplashHint(auth.hasSession() ? t("splash.tapToContinue") : t("splash.tapToStart"));
+  setSplashHint(t(hasReturningUser() ? "splash.tapToContinue" : "splash.tapToStart"));
 }
 
 /** Load Google Identity Services in the background. Guest mode never waits for it. */
@@ -433,7 +440,7 @@ async function performSignOut() {
       elements.view.innerHTML = "";
       elements.app.hidden = true;
       elements.splash.hidden = false;
-      setSplashHint(t("splash.tapToStart"));
+      resetSplashHint();
       setSplashDisabled(false);
     }
 
@@ -479,7 +486,7 @@ function bindEvents() {
 async function boot() {
   setLanguage(detectLanguage(navigator.language));
   applyChrome();
-  setSplashHint(t("splash.tapToStart"));
+  resetSplashHint();
   setSplashWarning("");
   setSplashDisabled(false);
   bindEvents();
