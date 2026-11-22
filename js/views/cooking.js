@@ -473,7 +473,7 @@ function renderSelectionBar() {
         </button>
         <button class="button button--small button--secondary" type="button"
           data-action="bulk-export" ${hasSelection ? "" : "disabled"}>
-          ${icon("download")}
+          ${icon("upload")}
           <span>${escapeHtml(t("cooking.exportSelected"))}</span>
         </button>
         <button class="button button--small button--danger" type="button"
