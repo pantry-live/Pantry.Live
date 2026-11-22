@@ -5,7 +5,6 @@
  */
 
 import { getConfig, hasValidConfig } from "./auth.js";
-import { getLanguage } from "./i18n.js";
 
 const GIS_WAIT_MS = 12000;
 const EXPIRY_MARGIN_MS = 60000;
@@ -64,10 +63,6 @@ function waitForGis() {
   });
 }
 
-/**
- * Draw Google's sign-in button inside `container`.
- * Resolves false when the Client ID is missing.
- */
 export async function renderAiSignIn(container) {
   if (!hasValidConfig()) return false;
 
@@ -87,13 +82,11 @@ export async function renderAiSignIn(container) {
     size: "large",
     text: "signin_with",
     shape: "pill",
-    width: 280,
-    locale: getLanguage()
+    width: 280
   });
   return true;
 }
 
-/** End the built-in AI sign-in on this page. The user can sign in again at any time. */
 export function clearAiSession() {
   idToken = null;
   expiresAt = 0;
