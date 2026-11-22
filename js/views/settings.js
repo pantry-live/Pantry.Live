@@ -76,9 +76,9 @@ export function render(root, ctx) {
                 ? "settings.brainstormConnectedHint"
                 : "settings.brainstormNotConnectedHint"))}
             </span>
-            ${brainstormConnected ? `
-              <span class="settings-row__title settings-row--danger" style="display: block; margin-top: 8px;">
-                ${escapeHtml(t("settings.disconnectBrainstorm"))}
+              ${brainstormConnected ? `
+              <span class="settings-row--danger" style="display: block; margin-top: 8px;">
+                <span class="settings-row__title">${escapeHtml(t("settings.disconnectBrainstorm"))}</span>
               </span>
             ` : ""}
           </span>
