@@ -36,6 +36,26 @@ const LEADING_QTY = new RegExp(
   String.raw`^(\s*(?:[-*•·]\s*)?)(${QTY})(?:\s*[-–—]\s*(${QTY}))?`
 );
 
+const UNIT_TOKENS = new Set([
+  "g", "gr", "gram", "grams", "gramm", "kg", "mg", "kilo", "kilogram", "kilogramm",
+  "ml", "cl", "dl", "l", "liter", "litre", "liters", "litres", "milliliter",
+  "el", "eetlepel", "eetlepels", "tl", "theelepel", "theelepels", "tsp", "tbsp",
+  "esslöffel", "teelöffel", "cup", "cups", "tasse", "tassen", "glas", "gläser",
+  "oz", "lb", "lbs", "ounce", "ounces", "pound", "pounds", "pint", "pints",
+  "quart", "quarts", "stuk", "stuks", "stukje", "stukjes", "blik", "blikken",
+  "pot", "potten", "zak", "zakken", "teen", "tenen", "zehe", "zehen", "snuf",
+  "snufje", "snufjes", "pinch", "pinches", "can", "cans", "package", "packages",
+  "pkg", "bunch", "bunches", "slice", "slices", "scheut", "scheutje", "handje",
+  "bos", "bossen", "takje", "takjes", "pond", "dose", "dosen", "päckchen",
+  "bund", "bünde", "prise", "prisen", "scheibe", "scheiben"
+]);
+
+const GENERIC_STAPLES = new Set([
+  "zout", "peper", "water", "suiker", "olie", "boter", "room"
+]);
+
+const PLURAL_SUFFIXES = ["en", "s", "n"];
+
 const COMMON_FRACTIONS = [
   [1 / 10, "1/10"],
   [1 / 8, "1/8"],
@@ -151,6 +171,107 @@ export function scaleIngredientLine(line, factor) {
   }
 
   return `${prefix}${replacement}${text.slice(match[0].length)}`;
+}
+
+function stripLeadingQuantityAndUnits(line) {
+  let rest = String(line || "").trim();
+  rest = rest.replace(/^[-*•·]\s*/, "");
+
+  const quantity = new RegExp(
+    String.raw`^${QTY}(?:\s*[-–—]\s*${QTY})?\s*`
+  );
+  rest = rest.replace(quantity, "");
+
+  let removed = true;
+  while (removed && rest) {
+    removed = false;
+    const lower = rest.toLowerCase();
+    for (const unit of UNIT_TOKENS) {
+      if (!lower.startsWith(unit)) continue;
+      const next = lower.charAt(unit.length);
+      if (next && /[\p{L}\p{N}]/u.test(next)) continue;
+      rest = rest.slice(unit.length).trimStart();
+      removed = true;
+      break;
+    }
+  }
+
+  return rest;
+}
+
+/**
+ * Return the searchable ingredient name: no leading quantity or unit, no
+ * parenthetical notes, and nothing after the first comma. Lowercased.
+ */
+export function ingredientName(line) {
+  const rest = stripLeadingQuantityAndUnits(line)
+    .replace(/\([^)]*\)/g, " ")
+    .split(",")[0];
+
+  return rest.replace(/\s+/g, " ").trim().toLowerCase();
+}
+
+function nameWords(line) {
+  return ingredientName(line).match(/[\p{L}\p{N}]+/gu) || [];
+}
+
+function stepWordVariants(word) {
+  const variants = new Set([word]);
+  for (const suffix of PLURAL_SUFFIXES) {
+    if (word.length > suffix.length && word.endsWith(suffix)) {
+      variants.add(word.slice(0, -suffix.length));
+    }
+  }
+  return variants;
+}
+
+/**
+ * Match ingredient lines against one step of text.
+ *
+ * Returns the best matching ingredient line (or null), the number of other
+ * matched ingredients, and every matched line for highlighting. Generic
+ * staples count at half weight so specific ingredients win.
+ */
+export function matchStepIngredients(ingredientLines, stepText) {
+  const lines = Array.isArray(ingredientLines) ? ingredientLines : [];
+  const stepWords = String(stepText || "").toLowerCase().match(/[\p{L}\p{N}]+/gu) || [];
+
+  const stepStems = new Set();
+  for (const word of stepWords) {
+    for (const variant of stepWordVariants(word)) stepStems.add(variant);
+  }
+
+  const matches = [];
+  let top = null;
+  let topScore = 0;
+
+  for (const line of lines) {
+    const words = nameWords(line);
+    let score = 0;
+
+    for (const word of words) {
+      if ([...stepWordVariants(word)].some((variant) => stepStems.has(variant))) {
+        score += word.length;
+      }
+    }
+
+    if (score <= 0) continue;
+
+    const generic = words.some((word) => GENERIC_STAPLES.has(word));
+    const weightedScore = generic ? score / 2 : score;
+
+    matches.push(line);
+    if (weightedScore > topScore) {
+      topScore = weightedScore;
+      top = line;
+    }
+  }
+
+  return {
+    top,
+    others: top ? matches.length - 1 : 0,
+    matches
+  };
 }
 
 function normalizeSearchText(text) {
