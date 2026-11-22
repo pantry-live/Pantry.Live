@@ -3,6 +3,21 @@
    Design tokens, light/dark themes, and all UI components.
    ========================================================================= */
 
+@font-face {
+  font-family: "DM Sans";
+  src: url("../fonts/DMSans-VariableFont.woff2") format("woff2");
+  font-weight: 100 1000;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Fraunces";
+  src: url("../fonts/Fraunces-VariableFont.woff2") format("woff2");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   color-scheme: light;
   --bg: #f7f5f1;
@@ -27,8 +42,9 @@
   --max-width: 720px;
   --header-height: 60px;
   --tabbar-height: 68px;
-  --font: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-sans: "DM Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-voice: "Fraunces", Georgia, serif;
+  --font: var(--font-sans);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -237,7 +253,7 @@ a {
 
 .splash__wordmark {
   font-size: 36px;
-  font-weight: 680;
+  font-weight: 700;
   letter-spacing: -0.035em;
   line-height: 1;
 }
@@ -310,7 +326,7 @@ a {
   gap: 8px;
   min-width: 0;
   font-size: 17px;
-  font-weight: 680;
+  font-weight: 700;
   letter-spacing: -0.02em;
   border: 0;
   background: transparent;
@@ -543,7 +559,7 @@ body.keyboard-open .tabbar {
 
 .page-title {
   font-size: 26px;
-  font-weight: 680;
+  font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1.15;
 }
@@ -2721,32 +2737,17 @@ body.keyboard-open .tabbar {
   }
 }
 
-.splash {
-  position: fixed;
-  inset: 0;
-  overflow: hidden;
-}
-
 .splash__slogan {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 28px;
-  transform: translateY(0);
+  max-width: 560px;
+  min-height: 2.6em;
   margin: 0;
   padding: 0 1.25rem;
-  text-align: center;
-  font-family: var(--font-voice, Georgia, serif);
+  font-family: Georgia, "Times New Roman", serif;
   font-size: 24px;
   font-weight: 500;
   line-height: 1.3;
-  color: var(--text-primary);
-  transition: top 0.8s ease, transform 0.8s ease;
-}
-
-.splash.is-intro .splash__slogan {
-  top: 50%;
-  transform: translateY(-50%);
+  color: var(--text);
+  text-align: center;
 }
 
 .splash__cursor {
@@ -2759,61 +2760,38 @@ body.keyboard-open .tabbar {
   animation: splash-blink 1s steps(1) infinite;
 }
 
-.splash.is-intro .splash__cursor:not([hidden]) {
-  display: inline-block;
-}
-
 .splash__cursor[data-done] {
   display: none;
 }
 
 @keyframes splash-blink {
-  50% { opacity: 0; }
+  50% {
+    opacity: 0;
+  }
 }
 
-.splash__panel {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  transform: translateY(0);
-  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+.splash__button {
+  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.6s ease;
 }
 
-.splash.is-intro .splash__panel {
-  transform: translateY(100%);
+.splash.is-intro .splash__button {
+  transform: translateY(60px);
+  opacity: 0;
+}
+
+.splash__privacy-link {
+  transition: opacity 0.6s ease;
+}
+
+.splash.is-intro .splash__privacy-link {
+  opacity: 0;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .splash__slogan,
-  .splash__panel {
-    transition: none;
-  }
+  .splash__button,
+  .splash__privacy-link,
   .splash__cursor {
+    transition: none;
     animation: none;
   }
-}
-
-.splash__panel {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 22px;
-  padding: 32px 24px calc(32px + env(safe-area-inset-bottom));
-}
-
-.splash__panel .splash__button {
-  align-items: center;
-}
-
-.splash__panel .splash__privacy-link {
-  position: static;
-  left: auto;
-  right: auto;
-  bottom: auto;
-}
-
-.splash__panel .splash__warning {
-  width: 100%;
-  max-width: 460px;
 }
