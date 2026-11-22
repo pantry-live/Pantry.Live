@@ -64,7 +64,7 @@ export function render(root, ctx) {
         ${brainstormConnected ? `data-action="disconnect-brainstorm" role="button" tabindex="0"` : ""}
         style="position: relative; padding: 16px 24px 16px 16px;">
         <span class="badge${brainstormConnected ? " badge--connected" : ""}"
-          style="position: absolute; top: 20px; right: 24px;">
+          style="position: absolute; top: 12px; right: 16px;">
           ${escapeHtml(t(brainstormConnected
             ? "settings.brainstormConnected"
             : "settings.brainstormNotConnected"))}
@@ -77,10 +77,10 @@ export function render(root, ctx) {
               ? "settings.brainstormConnectedHint"
               : "settings.brainstormNotConnectedHint"))}
           </div>
-          ${brainstormConnected ? `
-            <div class="settings-row__desc" style="margin-top: 8px; color: var(--danger, #c0392b);">
+            ${brainstormConnected ? `
+            <span class="settings-row__title settings-row--danger" style="display: block; margin-top: 8px;">
               ${escapeHtml(t("settings.disconnectBrainstorm"))}
-            </div>
+            </span>
           ` : ""}
         </div>
       </section>

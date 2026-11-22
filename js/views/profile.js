@@ -18,7 +18,7 @@ export function accountHtml() {
         <button class="settings-row settings-row--button${isDrive ? " settings-row--danger" : ""}"
           type="button" data-action="${isDrive ? "sign-out" : "sign-in"}"
           style="position: relative; padding-right: 6rem;">
-          <span class="badge" style="position: absolute; top: 12px; right: 6px;">
+          <span class="badge" style="position: absolute; top: 12px; right: 2px;">
             ${escapeHtml(isDrive ? t("profile.driveBadge") : t("profile.guestBadge"))}
           </span>
           <span class="settings-row__text">
