@@ -21,6 +21,7 @@ const DATA_VERSION = 1;
 const SAVE_DELAY = 600;
 const CACHE_PREFIX = "pantry.cache.v1.";
 const GUEST_KEY = "pantry.guest.v1";
+const GUEST_OWNER_KEY = "pantry.guest.owner.v1";
 
 let state = null;
 let saveTimer = null;
@@ -191,6 +192,22 @@ function clearGuest() {
   }
 }
 
+function readOwner() {
+  try {
+    return localStorage.getItem(GUEST_OWNER_KEY) || "";
+  } catch {
+    return "";
+  }
+}
+
+function writeOwner(sub) {
+  try {
+    if (sub) localStorage.setItem(GUEST_OWNER_KEY, sub);
+  } catch {
+    /* Ignore. */
+  }
+}
+
 /* ------------------------------ Loading -------------------------------- */
 
 function cancelPendingSave() {
@@ -318,6 +335,8 @@ async function initDrive(profile, detectedLanguage = "en") {
 
   applyLanguage(result.data.settings.language);
   writeCache(result.sub, result.data);
+  writeGuest(result.data);
+  writeOwner(result.sub);
   emit({ type: "loaded", offline: result.offline, error: result.loadError, mode: "drive" });
 
   if (result.needsPush) scheduleSave(true);
@@ -415,7 +434,10 @@ export async function login(profile) {
   if (state?.mode === "guest") writeGuest(state.data);
 
   const detectedLanguage = guestSource?.settings?.language || "en";
-  const guestData = normalizeData(guestSource, detectedLanguage);
+  const localOwner = readOwner();
+  // Local recipes are merged only when the same account signs back in.
+  const sameAccount = !localOwner || localOwner === profile.sub;
+  const guestData = normalizeData(sameAccount ? guestSource : null, detectedLanguage);
   const result = await loadDriveData(profile, detectedLanguage);
   const merged = mergeData(result.data, guestData);
 
@@ -431,10 +453,11 @@ export async function login(profile) {
 
   applyLanguage(merged.settings.language);
   writeCache(result.sub, merged);
+  writeGuest(merged);
+  writeOwner(result.sub);
   emit({ type: "loaded", offline: result.offline, error: result.loadError, mode: "drive" });
 
   const saved = await runSave();
-  if (saved) clearGuest();
 
   return { data: merged, saved, merged: true, offline: state?.offline };
 }
@@ -483,8 +506,8 @@ function touch() {
   if (!state) return;
   state.data.updatedAt = new Date().toISOString();
   state.dirty = true;
-  if (state.mode === "guest") writeGuest(state.data);
-  else writeCache(state.profileSub, state.data);
+  writeGuest(state.data); // local copy is always kept
+  if (state.mode === "drive") writeCache(state.profileSub, state.data);
   scheduleSave(false);
 }
 
