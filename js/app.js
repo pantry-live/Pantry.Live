@@ -31,7 +31,6 @@ const elements = {
   splashPrivacyTitle: document.getElementById("splash-privacy-title"),
   app: document.getElementById("app"),
   view: document.getElementById("view"),
-  headerBack: document.getElementById("header-back"),
   homeButton: document.getElementById("header-home"),
   settingsButton: document.getElementById("open-settings"),
   tabbar: document.querySelector(".tabbar"),
@@ -278,7 +277,6 @@ function applyChrome() {
 
   elements.tabbar?.setAttribute("aria-label", t("nav.main"));
   elements.settingsButton?.setAttribute("aria-label", t("nav.settings"));
-  elements.headerBack?.setAttribute("aria-label", t("common.back"));
   applySplashLabels();
 
   if (elements.app?.hidden) {
@@ -455,10 +453,6 @@ async function performSignOut() {
 function bindEvents() {
   elements.splashButton?.addEventListener("click", handleSplashClick);
   elements.splashPrivacyTitle?.addEventListener("click", () => openManual("privacy"));
-
-  elements.headerBack?.addEventListener("click", () => {
-    if (backHandler) backHandler();
-  });
 
   elements.homeButton?.addEventListener("click", () => {
     showTab("cooking");
