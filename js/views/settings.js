@@ -30,7 +30,6 @@ export function render(root, ctx) {
         <div class="settings-row">
           <div class="settings-row__text">
             <div class="settings-row__title">${escapeHtml(t("settings.language"))}</div>
-            <div class="settings-row__desc">${escapeHtml(t("settings.languageHint"))}</div>
           </div>
           <div class="settings-row__control">
             <label class="visually-hidden" for="settings-language">
