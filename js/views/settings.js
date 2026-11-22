@@ -61,27 +61,27 @@ export function render(root, ctx) {
       </div>
 
       <section class="settings-card" aria-label="${escapeHtml(t("settings.brainstormTitle"))}"
-        ${brainstormConnected ? `data-action="disconnect-brainstorm" role="button" tabindex="0"` : ""}
-        style="position: relative; padding: 16px 24px 16px 16px;">
-        <span class="badge${brainstormConnected ? " badge--connected" : ""}"
-          style="position: absolute; top: 12px; right: 16px;">
-          ${escapeHtml(t(brainstormConnected
-            ? "settings.brainstormConnected"
-            : "settings.brainstormNotConnected"))}
-        </span>
-
-        <div class="settings-row__text" style="padding-right: 6rem;">
-          <div class="settings-row__title">${escapeHtml(t("settings.brainstormTitle"))}</div>
-          <div class="settings-row__desc">
+        ${brainstormConnected ? `data-action="disconnect-brainstorm" role="button" tabindex="0"` : ""}>
+        <div class="settings-row" style="position: relative; padding-right: 6rem;">
+          <span class="badge${brainstormConnected ? " badge--connected" : ""}"
+            style="position: absolute; top: 12px; right: 2px;">
             ${escapeHtml(t(brainstormConnected
-              ? "settings.brainstormConnectedHint"
-              : "settings.brainstormNotConnectedHint"))}
-          </div>
-            ${brainstormConnected ? `
-            <span class="settings-row__title settings-row--danger" style="display: block; margin-top: 8px;">
-              ${escapeHtml(t("settings.disconnectBrainstorm"))}
+              ? "settings.brainstormConnected"
+              : "settings.brainstormNotConnected"))}
+          </span>
+          <span class="settings-row__text">
+            <span class="settings-row__title">${escapeHtml(t("settings.brainstormTitle"))}</span>
+            <span class="settings-row__desc">
+              ${escapeHtml(t(brainstormConnected
+                ? "settings.brainstormConnectedHint"
+                : "settings.brainstormNotConnectedHint"))}
             </span>
-          ` : ""}
+            ${brainstormConnected ? `
+              <span class="settings-row__title settings-row--danger" style="display: block; margin-top: 8px;">
+                ${escapeHtml(t("settings.disconnectBrainstorm"))}
+              </span>
+            ` : ""}
+          </span>
         </div>
       </section>
 
