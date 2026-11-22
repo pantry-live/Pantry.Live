@@ -12,6 +12,7 @@ The interface is available in **Dutch, English, and German**. On first start, Pa
 - Profile screen for account status, sign-in, and sign-out.
 - Recipe list with search by title or ingredient and category filters.
 - Add, edit, and delete recipes.
+- Bulk select recipes to edit categories, export, or delete in one go.
 - Category and subcategory management.
 - Import and export of recipes as text files or ZIP archives.
 - Serving scaler: every recipe starts at 2 servings and leading ingredient quantities scale live.
@@ -40,6 +41,14 @@ python3 -m http.server 8002
 ```
 
 Open <http://localhost:8002>.
+
+## Tests
+
+Run the store bulk-save check with:
+
+```sh
+node tests/store.test.mjs
+```
 
 ## Configuration
 
@@ -216,7 +225,6 @@ One ingredient or step per line. A recipe without a title cannot be saved.
 - Local data is tied to the browser and device. Clearing browser storage removes it.
 - Drive sync is last-write-wins per file; there is no real-time collaboration.
 - Voice and Wake Lock depend on browser support.
-- Bulk selection for delete, export, and edit is future work.
 
 ## Troubleshooting
 

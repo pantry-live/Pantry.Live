@@ -67,15 +67,16 @@ function buildRecipeZip(recipes) {
   return createZip(files);
 }
 
-/** Download all recipes as a ZIP of text files. Saved to the device, not to Drive. */
-export function exportRecipes(recipes) {
+/** Download recipes as a ZIP of text files. Saved to the device, not to Drive. */
+export function exportRecipes(recipes, { downloadName = "" } = {}) {
   const blob = buildRecipeZip(recipes);
   const url = URL.createObjectURL(blob);
   const date = new Date().toISOString().slice(0, 10);
+  const baseName = downloadName ? safeBaseName(downloadName) : `pantry-recipes-${date}`;
 
   const link = document.createElement("a");
   link.href = url;
-  link.download = `pantry-recipes-${date}.zip`;
+  link.download = `${baseName}.zip`;
   document.body.append(link);
   link.click();
   link.remove();

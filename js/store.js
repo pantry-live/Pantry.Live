@@ -544,6 +544,56 @@ export function deleteRecipe(id) {
   return true;
 }
 
+export function updateRecipes(ids, changes = {}) {
+  if (!state) return 0;
+
+  const targets = new Set(ids || []);
+  if (!targets.size) return 0;
+
+  const hasCategory = changes.category !== undefined;
+  const hasSubcategory = changes.subcategory !== undefined;
+  if (!hasCategory && !hasSubcategory) return 0;
+
+  const category = hasCategory ? String(changes.category || "").trim() : "";
+  const subcategory = hasSubcategory ? String(changes.subcategory || "").trim() : "";
+  const now = new Date().toISOString();
+  let updated = 0;
+
+  for (const recipe of state.data.recipes) {
+    if (!targets.has(recipe.id)) continue;
+
+    const categoryChanged = hasCategory && recipe.category !== category;
+    const subcategoryChanged = hasSubcategory && recipe.subcategory !== subcategory;
+
+    if (!categoryChanged && !subcategoryChanged) continue;
+
+    if (categoryChanged) recipe.category = category;
+    if (hasSubcategory) recipe.subcategory = subcategory;
+    else if (categoryChanged) recipe.subcategory = "";
+
+    recipe.updatedAt = now;
+    updated += 1;
+  }
+
+  if (updated) touch();
+  return updated;
+}
+
+export function deleteRecipes(ids) {
+  if (!state) return 0;
+
+  const targets = new Set(ids || []);
+  if (!targets.size) return 0;
+
+  const next = state.data.recipes.filter((recipe) => !targets.has(recipe.id));
+  const removed = state.data.recipes.length - next.length;
+  if (!removed) return 0;
+
+  state.data.recipes = next;
+  touch();
+  return removed;
+}
+
 /** Swap default category names, and the recipes that use them, to the new language. Custom names are kept. */
 function swapDefaultCategoryNames(fromLanguage, toLanguage) {
   const from = defaultCategories(fromLanguage);
@@ -717,6 +767,65 @@ export function addSubcategory(category, name) {
   state.data.subcategories[parent] = [...list, value];
   touch();
   return { ok: true, value };
+}
+
+export function renameSubcategory(category, fromName, toName) {
+  if (!state) return { ok: false, reason: "missing" };
+
+  const parent = String(category || "").trim();
+  const from = String(fromName || "").trim();
+  const to = String(toName || "").trim();
+
+  if (!state.data.categories.includes(parent)) return { ok: false, reason: "missing" };
+  if (!to) return { ok: false, reason: "empty" };
+
+  const list = state.data.subcategories[parent] || [];
+  if (!list.includes(from)) return { ok: false, reason: "missing" };
+  if (from === to) return { ok: true, value: to };
+
+  const duplicate = list.some((item) => (
+    item.toLowerCase() === to.toLowerCase() && item !== from
+  ));
+  if (duplicate) return { ok: false, reason: "duplicate" };
+
+  state.data.subcategories[parent] = list.map((item) => (item === from ? to : item));
+
+  const now = new Date().toISOString();
+  for (const recipe of state.data.recipes) {
+    if (recipe.category === parent && recipe.subcategory === from) {
+      recipe.subcategory = to;
+      recipe.updatedAt = now;
+    }
+  }
+
+  touch();
+  return { ok: true, value: to };
+}
+
+export function deleteSubcategory(category, name) {
+  if (!state) return { ok: false, reason: "missing" };
+
+  const parent = String(category || "").trim();
+  const value = String(name || "").trim();
+  if (!state.data.categories.includes(parent)) return { ok: false, reason: "missing" };
+
+  const list = state.data.subcategories[parent] || [];
+  if (!list.includes(value)) return { ok: false, reason: "missing" };
+
+  const next = list.filter((item) => item !== value);
+  if (next.length) state.data.subcategories[parent] = next;
+  else delete state.data.subcategories[parent];
+
+  const now = new Date().toISOString();
+  for (const recipe of state.data.recipes) {
+    if (recipe.category === parent && recipe.subcategory === value) {
+      recipe.subcategory = "";
+      recipe.updatedAt = now;
+    }
+  }
+
+  touch();
+  return { ok: true };
 }
 
 /* ------------------------------ Saving --------------------------------- */
