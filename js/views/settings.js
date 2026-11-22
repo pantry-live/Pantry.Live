@@ -47,51 +47,42 @@ export function render(root, ctx) {
         </div>
       </section>
 
-      <section class="settings-card">
-        <button class="settings-row settings-row--button" type="button" data-action="tutorial">
-          <span class="settings-row__text">
-            <span class="settings-row__title">${escapeHtml(t("settings.tutorial"))}</span>
-            <span class="settings-row__desc">${escapeHtml(t("settings.tutorialHint"))}</span>
-          </span>
-          <span class="settings-row__control" aria-hidden="true">${icon("arrow-right")}</span>
+      <div class="settings-tiles">
+        <button class="settings-tile" type="button" data-action="tutorial">
+          <span class="settings-tile__icon" aria-hidden="true">${icon("play")}</span>
+          <span class="settings-tile__title">${escapeHtml(t("settings.tutorial"))}</span>
+          <span class="settings-tile__desc">${escapeHtml(t("settings.tutorialHint"))}</span>
         </button>
-
-        <button class="settings-row settings-row--button" type="button" data-action="manual">
-          <span class="settings-row__text">
-            <span class="settings-row__title">${escapeHtml(t("settings.manual"))}</span>
-            <span class="settings-row__desc">${escapeHtml(t("settings.manualHint"))}</span>
-          </span>
-          <span class="settings-row__control" aria-hidden="true">${icon("book")}</span>
+        <button class="settings-tile" type="button" data-action="manual">
+          <span class="settings-tile__icon" aria-hidden="true">${icon("book")}</span>
+          <span class="settings-tile__title">${escapeHtml(t("settings.manual"))}</span>
+          <span class="settings-tile__desc">${escapeHtml(t("settings.manualHint"))}</span>
         </button>
-      </section>
+      </div>
 
-      <section class="settings-card" aria-label="${escapeHtml(t("settings.brainstormTitle"))}">
-        <div class="settings-row">
-          <span class="settings-row__text">
-            <span class="settings-row__title">${escapeHtml(t("settings.brainstormTitle"))}</span>
-            <span class="settings-row__desc">
-              ${escapeHtml(t(brainstormConnected
-                ? "settings.brainstormConnectedHint"
-                : "settings.brainstormNotConnectedHint"))}
-            </span>
-          </span>
-          <span class="badge${brainstormConnected ? " badge--connected" : ""}">
+      <section class="settings-card" aria-label="${escapeHtml(t("settings.brainstormTitle"))}"
+        ${brainstormConnected ? `data-action="disconnect-brainstorm" role="button" tabindex="0"` : ""}
+        style="position: relative; padding: 16px 24px 16px 16px;">
+        <span class="badge${brainstormConnected ? " badge--connected" : ""}"
+          style="position: absolute; top: 20px; right: 24px;">
+          ${escapeHtml(t(brainstormConnected
+            ? "settings.brainstormConnected"
+            : "settings.brainstormNotConnected"))}
+        </span>
+
+        <div class="settings-row__text" style="padding-right: 6rem;">
+          <div class="settings-row__title">${escapeHtml(t("settings.brainstormTitle"))}</div>
+          <div class="settings-row__desc">
             ${escapeHtml(t(brainstormConnected
-              ? "settings.brainstormConnected"
-              : "settings.brainstormNotConnected"))}
-          </span>
+              ? "settings.brainstormConnectedHint"
+              : "settings.brainstormNotConnectedHint"))}
+          </div>
+          ${brainstormConnected ? `
+            <div class="settings-row__desc" style="margin-top: 8px; color: var(--danger, #c0392b);">
+              ${escapeHtml(t("settings.disconnectBrainstorm"))}
+            </div>
+          ` : ""}
         </div>
-
-        ${brainstormConnected ? `
-          <button class="settings-row settings-row--button settings-row--danger"
-            type="button" data-action="disconnect-brainstorm">
-            <span class="settings-row__text">
-              <span class="settings-row__title">${escapeHtml(t("settings.disconnectBrainstorm"))}</span>
-              <span class="settings-row__desc">${escapeHtml(t("settings.disconnectBrainstormHint"))}</span>
-            </span>
-            <span class="settings-row__control" aria-hidden="true">${icon("arrow-right")}</span>
-          </button>
-        ` : ""}
       </section>
 
       <div class="settings-tiles">
