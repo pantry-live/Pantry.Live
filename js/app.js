@@ -489,7 +489,31 @@ async function boot() {
   setSplashWarning("");
   setSplashDisabled(false);
   bindEvents();
+  bindKeyboardState();   // <- new line
   prepareAuth();
+}
+
+const EDITABLE = "input, textarea, select, [contenteditable='true']";
+let keyboardTimer = null;
+
+function updateKeyboardState() {
+  const active = document.activeElement;
+  const editing = active && active.matches?.(EDITABLE);
+  document.body.classList.toggle("keyboard-open", Boolean(editing));
+}
+
+function bindKeyboardState() {
+  document.addEventListener("focusin", (event) => {
+    clearTimeout(keyboardTimer);
+    if (event.target.matches?.(EDITABLE)) {
+      document.body.classList.add("keyboard-open");
+    }
+  });
+
+  document.addEventListener("focusout", () => {
+    clearTimeout(keyboardTimer);
+    keyboardTimer = setTimeout(updateKeyboardState, 150);
+  });
 }
 
 boot();

@@ -401,6 +401,10 @@ a {
   }
 }
 
+body.keyboard-open .tabbar {
+  display: none;
+}
+
 /* ----------------------------- Buttons --------------------------------- */
 
 .icon-button {
