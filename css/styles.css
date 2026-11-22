@@ -196,7 +196,6 @@ a {
   align-items: center;
   justify-content: center;
   gap: 22px;
-  padding: 32px 24px calc(32px + env(safe-area-inset-bottom));
   text-align: center;
   background:
     radial-gradient(circle at 50% 30%, var(--accent-soft) 0%, transparent 58%),
@@ -2720,4 +2719,101 @@ body.keyboard-open .tabbar {
     transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+.splash {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+.splash__slogan {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 28px;
+  transform: translateY(0);
+  margin: 0;
+  padding: 0 1.25rem;
+  text-align: center;
+  font-family: var(--font-voice, Georgia, serif);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: var(--text-primary);
+  transition: top 0.8s ease, transform 0.8s ease;
+}
+
+.splash.is-intro .splash__slogan {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.splash__cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: -0.15em;
+  background: currentColor;
+  animation: splash-blink 1s steps(1) infinite;
+}
+
+.splash.is-intro .splash__cursor:not([hidden]) {
+  display: inline-block;
+}
+
+.splash__cursor[data-done] {
+  display: none;
+}
+
+@keyframes splash-blink {
+  50% { opacity: 0; }
+}
+
+.splash__panel {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transform: translateY(0);
+  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.splash.is-intro .splash__panel {
+  transform: translateY(100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .splash__slogan,
+  .splash__panel {
+    transition: none;
+  }
+  .splash__cursor {
+    animation: none;
+  }
+}
+
+.splash__panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 22px;
+  padding: 32px 24px calc(32px + env(safe-area-inset-bottom));
+}
+
+.splash__panel .splash__button {
+  align-items: center;
+}
+
+.splash__panel .splash__privacy-link {
+  position: static;
+  left: auto;
+  right: auto;
+  bottom: auto;
+}
+
+.splash__panel .splash__warning {
+  width: 100%;
+  max-width: 460px;
 }

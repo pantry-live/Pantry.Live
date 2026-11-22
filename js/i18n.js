@@ -79,6 +79,9 @@ const STRINGS = {
       gisUnavailable: "Google-inloggen kon niet worden geladen. Controleer je internetverbinding en herlaad de pagina.",
       retry: "Opnieuw proberen"
     },
+    intro: {
+      slogan: "Van voorraadkast tot bord"
+    },
     language: {
       title: "Kies je taal",
       detected: "Gedetecteerd via je browser: {language}.",
@@ -483,6 +486,9 @@ const STRINGS = {
       gisUnavailable: "Google sign-in could not be loaded. Check your internet connection and reload the page.",
       retry: "Try again"
     },
+    intro: {
+      slogan: "From pantry to plate"
+    },
     language: {
       title: "Choose your language",
       detected: "Detected from your browser: {language}.",
@@ -886,6 +892,9 @@ const STRINGS = {
       loadingRecipes: "Rezepte laden…",
       gisUnavailable: "Google-Anmeldung konnte nicht geladen werden. Prüfe deine Internetverbindung und lade die Seite neu.",
       retry: "Erneut versuchen"
+    },
+    intro: {
+      slogan: "Von der Vorratskammer auf den Teller"
     },
     language: {
       title: "Sprache wählen",

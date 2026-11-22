@@ -23,12 +23,22 @@ const VIEWS = {
   brainstorm: brainstormView
 };
 
+const INTRO_START_DELAY = 300;
+const INTRO_CHAR_DELAY = 90;
+const INTRO_PAUSE = 400;
+const INTRO_SLIDE_DURATION = 1000;
+const LOADING_HINT_DELAY = 400;
+
 const elements = {
   splash: document.getElementById("splash"),
   splashButton: document.getElementById("splash-button"),
   splashHint: document.getElementById("splash-hint"),
   splashWarning: document.getElementById("splash-warning"),
   splashPrivacyTitle: document.getElementById("splash-privacy-title"),
+  splashSlogan: document.getElementById("splash-slogan"),
+  introTyped: document.querySelector('[data-ref="intro-typed"]'),
+  introCursor: document.querySelector('[data-ref="intro-cursor"]'),
+  introFull: document.querySelector('[data-ref="intro-full"]'),
   app: document.getElementById("app"),
   view: document.getElementById("view"),
   homeButton: document.getElementById("header-home"),
@@ -101,6 +111,60 @@ function resetSplashHint() {
   setSplashHint(t(hasReturningUser() ? "splash.tapToContinue" : "splash.tapToStart"));
 }
 
+function shouldShowIntro() {
+  return !store.hasSeenIntro() && !hasReturningUser();
+}
+
+function showSplashFinalState(text) {
+  elements.introTyped.textContent = text;
+  elements.introCursor.setAttribute("data-done", "");
+  elements.splash.classList.remove("is-intro");
+  setSplashDisabled(false);
+  resetSplashHint();
+}
+
+function startIntro() {
+  const text = t("intro.slogan");
+  elements.introFull.textContent = text;
+  elements.splash.classList.add("is-intro");
+  setSplashDisabled(true);
+
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduceMotion) {
+    elements.splash.classList.remove("is-intro");
+    showSplashFinalState(text);
+    return;
+  }
+
+  let index = 0;
+  const step = () => {
+    index += 1;
+    elements.introTyped.textContent = text.slice(0, index);
+    if (index < text.length) {
+      window.setTimeout(step, INTRO_CHAR_DELAY);
+      return;
+    }
+    elements.introCursor.setAttribute("data-done", "");
+    window.setTimeout(() => {
+      elements.splash.classList.remove("is-intro");
+      window.setTimeout(() => {
+        setSplashDisabled(false);
+        resetSplashHint();
+      }, INTRO_SLIDE_DURATION);
+    }, INTRO_PAUSE);
+  };
+  window.setTimeout(step, INTRO_START_DELAY);
+}
+
+function showReturningSplash() {
+  elements.introTyped.textContent = t("intro.slogan");
+  elements.introFull.textContent = t("intro.slogan");
+  elements.introCursor.setAttribute("data-done", "");
+  elements.splash.classList.remove("is-intro");
+  setSplashDisabled(false);
+  resetSplashHint();
+}
+
 /** Load Google Identity Services in the background. Guest mode never waits for it. */
 async function prepareAuth() {
   try {
@@ -127,6 +191,8 @@ function splashErrorMessage(error) {
 async function handleSplashClick() {
   if (busy) return;
 
+  store.markIntroSeen();
+
   busy = true;
   setSplashDisabled(true);
   setSplashWarning("");
@@ -149,8 +215,11 @@ async function handleSplashClick() {
 /* ----------------------------- App entry -------------------------------- */
 
 async function openApp(profile) {
-  setSplashHint(t("splash.loadingRecipes"));
   setSplashDisabled(true);
+
+  const loadingTimer = window.setTimeout(() => {
+    setSplashHint(t("splash.loadingRecipes"));
+  }, LOADING_HINT_DELAY);
 
   const detectedLocale = profile?.locale || auth.getLocale();
   const detectedLanguage = detectLanguage(detectedLocale);
@@ -159,6 +228,7 @@ async function openApp(profile) {
     if (profile) drive.resetCache();
     await store.init({ profile, detectedLanguage });
   } catch (error) {
+    window.clearTimeout(loadingTimer);
     console.error(error);
 
     if (error?.code === "auth_expired") auth.expireSession();
@@ -179,6 +249,7 @@ async function openApp(profile) {
     return false;
   }
 
+  window.clearTimeout(loadingTimer);
   elements.splash.hidden = true;
   elements.app.hidden = false;
   elements.view.innerHTML = "";
@@ -440,8 +511,7 @@ async function performSignOut() {
       elements.view.innerHTML = "";
       elements.app.hidden = true;
       elements.splash.hidden = false;
-      resetSplashHint();
-      setSplashDisabled(false);
+      showReturningSplash();
     }
 
     applyChrome();
@@ -486,9 +556,12 @@ function bindEvents() {
 async function boot() {
   setLanguage(detectLanguage(navigator.language));
   applyChrome();
-  resetSplashHint();
   setSplashWarning("");
-  setSplashDisabled(false);
+  if (shouldShowIntro()) {
+    startIntro();
+  } else {
+    showReturningSplash();
+  }
   bindEvents();
   bindKeyboardState();   // <- new line
   prepareAuth();
