@@ -14,7 +14,9 @@ import {
   t
 } from "../i18n.js";
 import {
+  ingredientName,
   matchesSearch,
+  matchStepIngredients,
   scaleIngredientLine,
   splitLines
 } from "../recipe.js";
@@ -1725,37 +1727,34 @@ function openCategoryEditor() {
 /* --------------------------- Cooking overlay ---------------------------- */
 
 function buildCookingItems(recipe) {
-  const factor = state.servings / (Number(recipe.baseServings) || 2);
-  const ingredients = splitLines(recipe.ingredients);
   const steps = splitLines(recipe.steps);
 
-  return [
-    ...ingredients.map((line, index) => ({
-      kind: "ingredient",
-      text: scaleIngredientLine(line, factor),
-      current: index + 1,
-      total: ingredients.length
-    })),
-    ...steps.map((step, index) => ({
-      kind: "step",
-      text: step,
-      current: index + 1,
-      total: steps.length
-    }))
-  ];
+  return steps.map((step, index) => ({
+    text: step,
+    current: index + 1,
+    total: steps.length
+  }));
 }
 
 function startCooking() {
   const recipe = store.getRecipe(state.recipeId);
   if (!recipe) return;
 
+  const ingredientLines = splitLines(recipe.ingredients);
   const items = buildCookingItems(recipe);
-  if (!items.length) {
+  if (!ingredientLines.length && !items.length) {
     toast(t("cooking.nothingToCook"));
     return;
   }
 
   closeCooking();
+  setRecipeOpen(true);
+
+  const factor = state.servings / (Number(recipe.baseServings) || 2);
+  const ingredients = ingredientLines.map((line) => ({
+    line,
+    text: scaleIngredientLine(line, factor)
+  }));
 
   const voiceSupported = isSpeechSupported();
   let index = 0;
@@ -1763,6 +1762,7 @@ function startCooking() {
   let voiceListening = false;
   let voice = null;
 
+  const listId = `cooking-ingredients-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
   const overlay = document.createElement("div");
   overlay.className = "cooking-overlay";
   overlay.tabIndex = -1;
@@ -1770,6 +1770,13 @@ function startCooking() {
   overlay.setAttribute("aria-modal", "true");
   overlay.setAttribute("aria-label", t("cooking.cookingMode"));
   overlay.innerHTML = `
+    <button class="cooking-ingredients__toggle" type="button" data-action="toggle-ingredients"
+      aria-expanded="false" aria-controls="${listId}"
+      aria-label="${escapeHtml(t("cooking.ingredientsBarAria"))}">
+      <span class="cooking-ingredients__label" data-ref="ingredients-label"></span>
+      <span class="cooking-ingredients__chevron" aria-hidden="true">▾</span>
+    </button>
+
     <header class="cooking-overlay__header">
       <div class="cooking-overlay__progress" data-ref="progress"></div>
       <button class="icon-button" type="button" data-action="close-cooking"
@@ -1777,6 +1784,36 @@ function startCooking() {
         ${icon("close")}
       </button>
     </header>
+
+    <section class="cooking-ingredients__drawer" id="${listId}"
+      data-ref="ingredients-drawer" aria-label="${escapeHtml(t("cooking.ingredientsTitle"))}" hidden>
+      <div class="cooking-ingredients__drawer-head">
+        <h2 class="cooking-ingredients__drawer-title">${escapeHtml(t("cooking.ingredientsTitle"))}</h2>
+        <div class="cooking-ingredients__drawer-actions">
+          <button class="button button--secondary button--small" type="button"
+            data-action="fullscreen-ingredients">
+            ${escapeHtml(t("cooking.ingredientsFullscreen"))}
+          </button>
+          <button class="icon-button icon-button--small" type="button"
+            data-action="close-fullscreen-ingredients"
+            aria-label="${escapeHtml(t("cooking.ingredientsClose"))}" hidden>
+            ${icon("close")}
+          </button>
+        </div>
+      </div>
+      <ul class="cooking-ingredients__list" data-ref="ingredients-list">
+        ${ingredients.length ? ingredients.map((ingredient, ingredientIndex) => `
+          <li class="cooking-ingredients__item" data-ingredient-index="${ingredientIndex}">
+            <span class="cooking-ingredients__marker" aria-hidden="true"></span>
+            <span class="cooking-ingredients__text">${escapeHtml(ingredient.text)}</span>
+          </li>
+        `).join("") : `
+          <li class="cooking-ingredients__item">
+            <span class="cooking-ingredients__text muted">${escapeHtml(t("cooking.noIngredients"))}</span>
+          </li>
+        `}
+      </ul>
+    </section>
 
     <div class="cooking-overlay__stage" data-ref="stage" aria-live="polite"></div>
 
@@ -1799,6 +1836,12 @@ function startCooking() {
 
   const progressElement = overlay.querySelector('[data-ref="progress"]');
   const stageElement = overlay.querySelector('[data-ref="stage"]');
+  const toggleButton = overlay.querySelector('[data-action="toggle-ingredients"]');
+  const ingredientsLabel = overlay.querySelector('[data-ref="ingredients-label"]');
+  const drawer = overlay.querySelector('[data-ref="ingredients-drawer"]');
+  const fullscreenButton = overlay.querySelector('[data-action="fullscreen-ingredients"]');
+  const closeFullscreenButton = overlay.querySelector('[data-action="close-fullscreen-ingredients"]');
+  const ingredientRows = [...overlay.querySelectorAll("[data-ingredient-index]")];
   const previousButton = overlay.querySelector('[data-action="previous"]');
   const nextButton = overlay.querySelector('[data-action="next"]');
   const micButton = overlay.querySelector('[data-action="voice"]');
@@ -1822,7 +1865,71 @@ function startCooking() {
     micButton.innerHTML = icon(voiceListening ? "stop" : "mic");
   };
 
+  const setFullscreen = (active) => {
+    const isFullscreen = Boolean(active);
+    drawer.classList.toggle("is-fullscreen", isFullscreen);
+    fullscreenButton.hidden = isFullscreen;
+    closeFullscreenButton.hidden = !isFullscreen;
+
+    if (isFullscreen) {
+      drawer.hidden = false;
+      toggleButton.setAttribute("aria-expanded", "true");
+      closeFullscreenButton.focus();
+    }
+  };
+
+  const exitFullscreen = () => {
+    if (!drawer.classList.contains("is-fullscreen")) return;
+    setFullscreen(false);
+    fullscreenButton.focus();
+  };
+
+  const setIngredientsOpen = (open) => {
+    const shouldOpen = Boolean(open);
+    toggleButton.setAttribute("aria-expanded", shouldOpen ? "true" : "false");
+    drawer.hidden = !shouldOpen;
+    if (!shouldOpen) setFullscreen(false);
+  };
+
+  const updateIngredientsBar = (stepText) => {
+    const result = matchStepIngredients(ingredientLines, stepText);
+    const topName = result.top ? ingredientName(result.top) || result.top : "";
+    const label = result.top
+      ? `${t("cooking.ingredientsBarLabel", { name: topName })}${
+        result.others > 0
+          ? ` ${t("cooking.ingredientsBarMore", { count: result.others })}`
+          : ""
+      }`
+      : t("cooking.ingredientsBarFallback", { count: ingredientLines.length });
+
+    ingredientsLabel.textContent = label;
+    toggleButton.setAttribute(
+      "aria-label",
+      `${t("cooking.ingredientsBarAria")}: ${label}`
+    );
+
+    const matched = new Set(result.matches);
+    for (const row of ingredientRows) {
+      const line = ingredientLines[Number(row.dataset.ingredientIndex)];
+      row.classList.toggle("is-match", matched.has(line));
+    }
+  };
+
   const updateStage = () => {
+    if (!items.length) {
+      progressElement.textContent = t("cooking.stepsTitle");
+      stageElement.innerHTML = `
+        <div class="cooking-overlay__stage-inner">
+          <p class="muted">${escapeHtml(t("cooking.noSteps"))}</p>
+        </div>
+      `;
+      previousButton.disabled = true;
+      nextButton.textContent = t("cooking.doneCooking");
+      if (micButton) micButton.hidden = true;
+      updateIngredientsBar("");
+      return;
+    }
+
     const atFinish = index >= items.length;
 
     if (atFinish) {
@@ -1836,24 +1943,23 @@ function startCooking() {
           </div>
         </div>
       `;
-      previousButton.disabled = items.length === 0;
+      previousButton.disabled = false;
       nextButton.textContent = t("cooking.doneCooking");
       if (micButton) micButton.hidden = true;
+      updateIngredientsBar("");
       return;
     }
 
     const item = items[index];
-    const isIngredient = item.kind === "ingredient";
-    progressElement.textContent = isIngredient
-      ? t("cooking.ingredientProgress", { current: item.current, total: item.total })
-      : t("cooking.stepProgress", { current: item.current, total: item.total });
+    progressElement.textContent = t("cooking.stepProgress", {
+      current: item.current,
+      total: item.total
+    });
 
     stageElement.innerHTML = `
       <div class="cooking-overlay__stage-inner">
-        <div class="cooking-overlay__kicker">
-          ${escapeHtml(isIngredient ? t("cooking.ingredientsTitle") : t("cooking.stepsTitle"))}
-        </div>
-        <p class="cooking-overlay__text${isIngredient ? "" : " cooking-overlay__text--step"}">
+        <div class="cooking-overlay__kicker">${escapeHtml(t("cooking.stepsTitle"))}</div>
+        <p class="cooking-overlay__text cooking-overlay__text--step">
           ${escapeHtml(item.text)}
         </p>
         <p class="cooking-overlay__hint">
@@ -1862,6 +1968,7 @@ function startCooking() {
       </div>
     `;
 
+    updateIngredientsBar(item.text);
     previousButton.disabled = index === 0;
     nextButton.textContent = t("cooking.nextItem");
     if (micButton) micButton.hidden = !voiceSupported;
@@ -1898,7 +2005,14 @@ function startCooking() {
   const onKeydown = (event) => {
     if (event.key === "Escape") {
       event.preventDefault();
-      close();
+      if (drawer.classList.contains("is-fullscreen")) {
+        exitFullscreen();
+      } else if (!drawer.hidden) {
+        setIngredientsOpen(false);
+        toggleButton.focus();
+      } else {
+        close();
+      }
     } else if (event.key === "ArrowRight") {
       event.preventDefault();
       advance();
@@ -1936,7 +2050,13 @@ function startCooking() {
   overlay.addEventListener("click", (event) => {
     const action = event.target.closest("[data-action]")?.dataset.action;
 
-    if (action === "close-cooking") close();
+    if (action === "toggle-ingredients") {
+      setIngredientsOpen(toggleButton.getAttribute("aria-expanded") !== "true");
+    } else if (action === "fullscreen-ingredients") {
+      setFullscreen(true);
+    } else if (action === "close-fullscreen-ingredients") {
+      exitFullscreen();
+    } else if (action === "close-cooking") close();
     else if (action === "previous") previous();
     else if (action === "next") advance();
     else if (action === "voice") {
