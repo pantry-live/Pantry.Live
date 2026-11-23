@@ -211,15 +211,10 @@ a {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  background: #f7f5f1;
-  color: #23241f;
-}
-
-@media (prefers-color-scheme: dark) {
-  .splash {
-    background: #5f7f6b;
-    color: #ffffff;
-  }
+  background:
+    radial-gradient(circle at 50% 30%, var(--accent-soft) 0%, transparent 58%),
+    var(--bg);
+  color: var(--text);
 }
 
 .splash__tap {
@@ -251,12 +246,12 @@ a {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  color: #23241f;
+  color: var(--text);
 }
 
 .splash__brand-mark {
   display: inline-flex;
-  color: #5f7f6b;
+  color: var(--accent-strong);
 }
 
 .splash__brand-mark .icon {
@@ -270,13 +265,6 @@ a {
   font-weight: 700;
   letter-spacing: -0.035em;
   line-height: 1;
-}
-
-@media (prefers-color-scheme: dark) {
-  .splash__brand,
-  .splash__brand-mark {
-    color: #ffffff;
-  }
 }
 
 .splash__warning {
