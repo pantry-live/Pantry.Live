@@ -71,16 +71,8 @@ const STRINGS = {
       main: "Hoofdnavigatie"
     },
     splash: {
-      tapToStart: "Tik om te beginnen",
-      tapToContinue: "Tik om verder te gaan",
       configMissing: "Google-inloggen is niet ingesteld. Je kunt Pantry lokaal gebruiken. Vul voor Drive een Google Client ID in config.js in.",
-      privacyTitle: "Jouw privacy",
-      loadingRecipes: "Recepten laden…",
-      gisUnavailable: "Google-inloggen kon niet worden geladen. Controleer je internetverbinding en herlaad de pagina.",
-      retry: "Opnieuw proberen"
-    },
-    intro: {
-      slogan: "Van voorraadkast tot bord"
+      gisUnavailable: "Google-inloggen kon niet worden geladen. Controleer je internetverbinding en herlaad de pagina."
     },
     language: {
       title: "Kies je taal",
@@ -478,16 +470,8 @@ const STRINGS = {
       main: "Main navigation"
     },
     splash: {
-      tapToStart: "Tap to start",
-      tapToContinue: "Tap to continue",
       configMissing: "Google sign-in is not configured. You can use Pantry locally. Add a Google Client ID to config.js for Drive.",
-      privacyTitle: "Your privacy",
-      loadingRecipes: "Loading recipes…",
-      gisUnavailable: "Google sign-in could not be loaded. Check your internet connection and reload the page.",
-      retry: "Try again"
-    },
-    intro: {
-      slogan: "From pantry to plate"
+      gisUnavailable: "Google sign-in could not be loaded. Check your internet connection and reload the page."
     },
     language: {
       title: "Choose your language",
@@ -885,16 +869,8 @@ const STRINGS = {
       main: "Hauptnavigation"
     },
     splash: {
-      tapToStart: "Tippen zum Starten",
-      tapToContinue: "Tippen zum Fortfahren",
       configMissing: "Google-Anmeldung ist nicht eingerichtet. Du kannst Pantry lokal nutzen. Für Drive füge eine Google Client-ID in config.js ein.",
-      privacyTitle: "Deine Privatsphäre",
-      loadingRecipes: "Rezepte laden…",
-      gisUnavailable: "Google-Anmeldung konnte nicht geladen werden. Prüfe deine Internetverbindung und lade die Seite neu.",
-      retry: "Erneut versuchen"
-    },
-    intro: {
-      slogan: "Von der Vorratskammer auf den Teller"
+      gisUnavailable: "Google-Anmeldung konnte nicht geladen werden. Prüfe deine Internetverbindung und lade die Seite neu."
     },
     language: {
       title: "Sprache wählen",

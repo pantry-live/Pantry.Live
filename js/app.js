@@ -13,7 +13,6 @@ import { runOnboarding, showTutorial } from "./onboarding.js";
 import { detectLanguage, setLanguage, t } from "./i18n.js";
 import { escapeHtml, icon, openModal, confirmDialog, toast } from "./ui.js";
 import { releaseWakeLock } from "./wakelock.js";
-import { openManual } from "./manual.js";
 
 localStorage.removeItem("pantry_gemini_api_key");
 
@@ -26,19 +25,14 @@ const VIEWS = {
 const INTRO_START_DELAY = 300;
 const INTRO_CHAR_DELAY = 90;
 const INTRO_PAUSE = 400;
-const INTRO_SLIDE_DURATION = 1000;
-const LOADING_HINT_DELAY = 400;
+const SPLASH_SLOGAN = "From pantry\nto plate";
+const SESSION_OPEN_KEY = "pantry_session_open";
 
 const elements = {
   splash: document.getElementById("splash"),
   splashButton: document.getElementById("splash-button"),
-  splashHint: document.getElementById("splash-hint"),
   splashWarning: document.getElementById("splash-warning"),
-  splashPrivacyTitle: document.getElementById("splash-privacy-title"),
-  splashSlogan: document.getElementById("splash-slogan"),
   introTyped: document.querySelector('[data-ref="intro-typed"]'),
-  introCursor: document.querySelector('[data-ref="intro-cursor"]'),
-  introFull: document.querySelector('[data-ref="intro-full"]'),
   app: document.getElementById("app"),
   view: document.getElementById("view"),
   homeButton: document.getElementById("header-home"),
@@ -79,10 +73,6 @@ const ctx = {
 
 /* ------------------------------ Splash ---------------------------------- */
 
-function setSplashHint(text) {
-  if (elements.splashHint && text) elements.splashHint.textContent = text;
-}
-
 function setSplashWarning(message) {
   if (!elements.splashWarning) return;
   elements.splashWarning.textContent = message || "";
@@ -93,49 +83,35 @@ function setSplashDisabled(disabled) {
   if (elements.splashButton) elements.splashButton.disabled = disabled;
 }
 
-function applySplashLabels() {
-  if (elements.splashPrivacyTitle) {
-    elements.splashPrivacyTitle.textContent = t("splash.privacyTitle");
+function readSessionOpen() {
+  try {
+    return sessionStorage.getItem(SESSION_OPEN_KEY) === "1";
+  } catch {
+    return false;
   }
-    elements.splashButton?.setAttribute(
-    "aria-label",
-    t(hasReturningUser() ? "splash.tapToContinue" : "splash.tapToStart")
-  );
 }
 
-function hasReturningUser() {
-  return auth.hasSession() || store.hasLocalData();
+function writeSessionOpen() {
+  try {
+    sessionStorage.setItem(SESSION_OPEN_KEY, "1");
+  } catch {
+    /* Storage can be blocked; the splash still works. */
+  }
 }
 
-function resetSplashHint() {
-  setSplashHint(t(hasReturningUser() ? "splash.tapToContinue" : "splash.tapToStart"));
-}
-
-function shouldShowIntro() {
-  return !store.hasSeenIntro() && !hasReturningUser();
-}
-
-function showSplashFinalState(text) {
-  elements.introTyped.textContent = text;
-  elements.introCursor.setAttribute("data-done", "");
-  elements.splash.classList.add("no-anim");
-  elements.splash.classList.remove("is-intro");
-  void elements.splash.offsetWidth;
-  elements.splash.classList.remove("no-anim");
-  setSplashDisabled(false);
-  resetSplashHint();
+function showSplashStatic({ ready = true } = {}) {
+  elements.introTyped.textContent = SPLASH_SLOGAN;
+  setSplashDisabled(!ready);
 }
 
 function startIntro() {
-  const text = t("intro.slogan");
-  elements.introFull.textContent = text;
-  elements.splash.classList.add("is-intro");
+  const text = SPLASH_SLOGAN;
+  elements.introTyped.textContent = "";
   setSplashDisabled(true);
 
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (reduceMotion) {
-    elements.splash.classList.remove("is-intro");
-    showSplashFinalState(text);
+    showSplashStatic();
     return;
   }
 
@@ -147,28 +123,11 @@ function startIntro() {
       window.setTimeout(step, INTRO_CHAR_DELAY);
       return;
     }
-    elements.introCursor.setAttribute("data-done", "");
     window.setTimeout(() => {
-      elements.splash.classList.remove("is-intro");
-      window.setTimeout(() => {
-        setSplashDisabled(false);
-        resetSplashHint();
-      }, INTRO_SLIDE_DURATION);
+      setSplashDisabled(false);
     }, INTRO_PAUSE);
   };
   window.setTimeout(step, INTRO_START_DELAY);
-}
-
-function showReturningSplash() {
-  elements.introTyped.textContent = t("intro.slogan");
-  elements.introFull.textContent = t("intro.slogan");
-  elements.introCursor.setAttribute("data-done", "");
-  elements.splash.classList.add("no-anim");
-  elements.splash.classList.remove("is-intro");
-  void elements.splash.offsetWidth;
-  elements.splash.classList.remove("no-anim");
-  setSplashDisabled(false);
-  resetSplashHint();
 }
 
 /** Load Google Identity Services in the background. Guest mode never waits for it. */
@@ -197,8 +156,6 @@ function splashErrorMessage(error) {
 async function handleSplashClick() {
   if (busy) return;
 
-  store.markIntroSeen();
-
   busy = true;
   setSplashDisabled(true);
   setSplashWarning("");
@@ -209,7 +166,6 @@ async function handleSplashClick() {
   } catch (error) {
     console.error(error);
     setSplashWarning(splashErrorMessage(error));
-    resetSplashHint();
   } finally {
     busy = false;
     if (elements.splash && !elements.splash.hidden) {
@@ -223,10 +179,6 @@ async function handleSplashClick() {
 async function openApp(profile) {
   setSplashDisabled(true);
 
-  const loadingTimer = window.setTimeout(() => {
-    setSplashHint(t("splash.loadingRecipes"));
-  }, LOADING_HINT_DELAY);
-
   const detectedLocale = profile?.locale || auth.getLocale();
   const detectedLanguage = detectLanguage(detectedLocale);
 
@@ -234,7 +186,6 @@ async function openApp(profile) {
     if (profile) drive.resetCache();
     await store.init({ profile, detectedLanguage });
   } catch (error) {
-    window.clearTimeout(loadingTimer);
     console.error(error);
 
     if (error?.code === "auth_expired") auth.expireSession();
@@ -251,11 +202,9 @@ async function openApp(profile) {
           : t("errors.unknownError");
 
     setSplashWarning(message);
-    setSplashHint(t("splash.retry"));
     return false;
   }
 
-  window.clearTimeout(loadingTimer);
   elements.splash.hidden = true;
   elements.app.hidden = false;
   elements.view.innerHTML = "";
@@ -361,7 +310,6 @@ function applyChrome() {
 
   elements.tabbar?.setAttribute("aria-label", t("nav.main"));
   elements.settingsButton?.setAttribute("aria-label", t("nav.settings"));
-  applySplashLabels();
 
   if (elements.app?.hidden) {
     document.title = "Pantry";
@@ -517,7 +465,7 @@ async function performSignOut() {
       elements.view.innerHTML = "";
       elements.app.hidden = true;
       elements.splash.hidden = false;
-      showReturningSplash();
+      showSplashStatic();
     }
 
     applyChrome();
@@ -535,7 +483,6 @@ async function performSignOut() {
 
 function bindEvents() {
   elements.splashButton?.addEventListener("click", handleSplashClick);
-  elements.splashPrivacyTitle?.addEventListener("click", () => openManual("privacy"));
 
   elements.homeButton?.addEventListener("click", () => {
     showTab("cooking");
@@ -563,14 +510,23 @@ async function boot() {
   setLanguage(detectLanguage(navigator.language));
   applyChrome();
   setSplashWarning("");
-  if (shouldShowIntro()) {
-    startIntro();
-  } else {
-    showReturningSplash();
-  }
+
+  const wasOpen = readSessionOpen();
+  writeSessionOpen();
+
   bindEvents();
-  bindKeyboardState();   // <- new line
+  bindKeyboardState();
   prepareAuth();
+
+  const session = auth.restoreExistingSession();
+  if (wasOpen && (session || store.hasLocalData())) {
+    showSplashStatic({ ready: false });
+    const opened = await openApp(session?.profile || null);
+    if (!opened) setSplashDisabled(false);
+    return;
+  }
+
+  startIntro();
 }
 
 const EDITABLE = "input, textarea, select, [contenteditable='true']";

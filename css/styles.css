@@ -208,88 +208,92 @@ a {
   min-height: 100dvh;
   display: flex;
   position: relative;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 22px;
-  text-align: center;
-  background:
-    radial-gradient(circle at 50% 30%, var(--accent-soft) 0%, transparent 58%),
-    var(--bg);
+  overflow: hidden;
+  background: #f7f5f1;
+  color: #23241f;
 }
 
-.splash__button {
+@media (prefers-color-scheme: dark) {
+  .splash {
+    background: #5f7f6b;
+    color: #ffffff;
+  }
+}
+
+.splash__tap {
+  position: absolute;
+  inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 16px;
+  justify-content: center;
+  width: 100%;
   padding: 24px;
   border: 0;
-  border-radius: var(--radius-lg);
   background: transparent;
   color: inherit;
+  text-align: center;
 }
 
-.splash__button:disabled {
+.splash__tap:disabled {
   opacity: 1;
+  cursor: default;
 }
 
-.splash__hat {
-  display: grid;
-  place-items: center;
-  width: 108px;
-  height: 108px;
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  background: var(--accent-soft);
-  color: var(--accent-strong);
-  animation: float 5.5s ease-in-out infinite;
+.splash__brand {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(36px + env(safe-area-inset-bottom));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #23241f;
 }
 
-.splash__hat .icon {
-  width: 54px;
-  height: 54px;
+.splash__brand-mark {
+  display: inline-flex;
+  color: #5f7f6b;
+}
+
+.splash__brand-mark .icon {
+  width: 28px;
+  height: 28px;
 }
 
 .splash__wordmark {
-  font-size: 36px;
+  font-family: var(--font-sans);
+  font-size: 24px;
   font-weight: 700;
   letter-spacing: -0.035em;
   line-height: 1;
 }
 
-.splash__hint {
-  color: var(--text-muted);
-  font-size: 15px;
+@media (prefers-color-scheme: dark) {
+  .splash__brand,
+  .splash__brand-mark {
+    color: #ffffff;
+  }
 }
 
 .splash__warning {
-  max-width: 460px;
+  position: absolute;
+  left: 50%;
+  bottom: calc(88px + env(safe-area-inset-bottom));
+  z-index: 2;
+  width: min(460px, calc(100% - 48px));
   padding: 12px 16px;
   border: 1px solid var(--danger);
   border-radius: var(--radius-sm);
   background: var(--danger-soft);
   color: var(--text);
   font-size: 13.5px;
-}
-
-.splash__privacy-link {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: calc(18px + env(safe-area-inset-bottom));
-  padding: 8px 12px;
-  font-size: 13.5px;
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-7px);
-  }
+  text-align: center;
+  transform: translateX(-50%);
+  pointer-events: none;
 }
 
 /* ----------------------------- App shell ------------------------------- */
@@ -2343,20 +2347,6 @@ body.keyboard-open .tabbar {
 /* ------------------------------ Responsive ------------------------------- */
 
 @media (max-width: 400px) {
-  .splash__hat {
-    width: 92px;
-    height: 92px;
-  }
-
-  .splash__hat .icon {
-    width: 46px;
-    height: 46px;
-  }
-
-  .splash__wordmark {
-    font-size: 32px;
-  }
-
   .page-title {
     font-size: 24px;
   }
@@ -2738,65 +2728,16 @@ body.keyboard-open .tabbar {
 }
 
 .splash__slogan {
+  display: block;
   max-width: 560px;
-  min-height: 2.6em;
+  min-height: 2.24em;
   margin: 0;
   padding: 0 1.25rem;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 24px;
-  font-weight: 500;
-  line-height: 1.3;
-  color: var(--text);
+  font-family: "Fraunces", Georgia, "Times New Roman", serif;
+  font-size: 44px;
+  font-weight: 400;
+  line-height: 1.12;
+  color: inherit;
   text-align: center;
-}
-
-.splash__cursor {
-  display: inline-block;
-  width: 2px;
-  height: 1em;
-  margin-left: 2px;
-  vertical-align: -0.15em;
-  background: currentColor;
-  animation: splash-blink 1s steps(1) infinite;
-}
-
-.splash__cursor[data-done] {
-  display: none;
-}
-
-@keyframes splash-blink {
-  50% {
-    opacity: 0;
-  }
-}
-
-.splash__button {
-  transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.6s ease;
-}
-
-.splash.is-intro .splash__button {
-  transform: translateY(60px);
-  opacity: 0;
-}
-
-.splash__privacy-link {
-  transition: opacity 0.6s ease;
-}
-
-.splash.is-intro .splash__privacy-link {
-  opacity: 0;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .splash__button,
-  .splash__privacy-link,
-  .splash__cursor {
-    transition: none;
-    animation: none;
-  }
-}
-
-.splash.no-anim .splash__button,
-.splash.no-anim .splash__privacy-link {
-  transition: none;
+  white-space: pre-line;
 }

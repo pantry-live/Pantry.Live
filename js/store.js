@@ -22,7 +22,6 @@ const SAVE_DELAY = 600;
 const CACHE_PREFIX = "pantry.cache.v1.";
 const GUEST_KEY = "pantry.guest.v1";
 const GUEST_OWNER_KEY = "pantry.guest.owner.v1";
-const INTRO_KEY = "pantry.intro.v1";
 
 let state = null;
 let saveTimer = null;
@@ -503,22 +502,6 @@ export function getMode() {
 
 export function hasLocalData() {
   return Boolean(readGuest());
-}
-
-export function hasSeenIntro() {
-  try {
-    return localStorage.getItem(INTRO_KEY) === "1";
-  } catch {
-    return false;
-  }
-}
-
-export function markIntroSeen() {
-  try {
-    localStorage.setItem(INTRO_KEY, "1");
-  } catch {
-    /* Ignore. */
-  }
 }
 
 /* ----------------------------- Mutations ------------------------------- */
