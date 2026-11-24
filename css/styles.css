@@ -2478,15 +2478,6 @@ body.keyboard-open .tabbar {
   color-scheme: light;
 }
 
-[data-ref="ai-signin"] {
-  opacity: 0;
-  animation: ai-signin-in 0.2s ease-out 0.35s forwards;
-}
-
-@keyframes ai-signin-in {
-  to { opacity: 1; }
-}
-
 .chip-set {
   display: flex;
   flex-wrap: wrap;
