@@ -23,7 +23,7 @@ import {
 import { escapeHtml, icon, openModal, confirmDialog, toast, lockScroll, unlockScroll } from "../ui.js";
 import { createSpeechController, isSpeechSupported } from "../speech.js";
 import { setRecipeOpen } from "../wakelock.js";
-import { exportRecipes } from "../exchange.js";
+import { exportRecipes, shareRecipeText } from "../exchange.js";
 import * as store from "../store.js";
 
 const SERVINGS_MIN = 1;
@@ -174,6 +174,9 @@ function handleClick(event) {
         return;
       case "bulk-delete":
         deleteSelected();
+        return;
+      case "share-recipe":
+        openShareMenu(store.getRecipe(actionElement.dataset.shareId));
         return;
       case "clear-search":
         clearSearch();
@@ -594,6 +597,54 @@ function exportSelected() {
     console.error(error);
     toast(t("common.error"), "error");
   }
+}
+
+function openShareMenu(recipe) {
+  if (!recipe) return;
+
+  const body = document.createElement("div");
+  body.className = "edit-menu";
+  body.innerHTML = `
+    <button class="button button--secondary button--block" type="button" data-share-choice="text">
+      ${icon("share")}
+      <span>${escapeHtml(t("cooking.shareAsText"))}</span>
+    </button>
+    <button class="button button--secondary button--block" type="button" data-share-choice="export">
+      ${icon("download")}
+      <span>${escapeHtml(t("cooking.exportRecipe"))}</span>
+    </button>
+  `;
+
+  const modal = openModal({
+    title: recipe.title,
+    body,
+    actions: [
+      { label: t("common.cancel"), variant: "secondary" }
+    ]
+  });
+
+  body.addEventListener("click", async (event) => {
+    const choice = event.target.closest("[data-share-choice]")?.dataset.shareChoice;
+    if (!choice) return;
+
+    if (choice === "export") {
+      try {
+        exportRecipes([recipe], { downloadName: recipe.title });
+        toast(t("settings.exportDone"), "success");
+      } catch (error) {
+        console.error(error);
+        toast(t("common.error"), "error");
+      }
+      modal.close();
+      return;
+    }
+
+    const result = await shareRecipeText(recipe);
+    modal.close();
+
+    if (result === "copied") toast(t("cooking.shareCopied"), "success");
+    else if (result === "failed") toast(t("cooking.shareFailed"), "error");
+  });
 }
 
 async function deleteSelected() {
@@ -1128,6 +1179,11 @@ function renderDetail(recipe) {
         <div class="page-header">
           <h1 class="recipe-detail__title">${escapeHtml(recipe.title)}</h1>
           <div class="page-actions">
+            <button class="icon-button" type="button" data-action="share-recipe"
+              data-share-id="${escapeHtml(recipe.id)}"
+              aria-label="${escapeHtml(t("cooking.shareRecipe"))}">
+              ${icon("share")}
+            </button>
             <button class="icon-button" type="button" data-action="edit"
               aria-label="${escapeHtml(t("cooking.editRecipe"))}">
               ${icon("edit")}

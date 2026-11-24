@@ -22,7 +22,7 @@ import { createZip } from "./zip.js";
 
 const INVALID_FILENAME_CHARS = /[\\/:*?"<>|\u0000-\u001f]/g;
 
-function formatRecipe(recipe) {
+export function formatRecipeText(recipe) {
   return [
     `Title: ${recipe.title}`,
     `Category: ${recipe.category || ""}`,
@@ -62,9 +62,38 @@ function buildRecipeZip(recipes) {
   const used = new Set();
   const files = recipes.map((recipe) => ({
     name: uniqueFileName(safeBaseName(recipe.title), used),
-    text: formatRecipe(recipe)
+    text: formatRecipeText(recipe)
   }));
   return createZip(files);
+}
+
+/**
+ * Share one recipe as plain text through the native share sheet.
+ * Falls back to the clipboard when Web Share is unavailable.
+ * Returns "shared", "copied", "cancelled", or "failed".
+ */
+export async function shareRecipeText(recipe) {
+  const text = formatRecipeText(recipe);
+
+  if (typeof navigator !== "undefined" && typeof navigator.share === "function") {
+    try {
+      await navigator.share({ title: recipe.title, text });
+      return "shared";
+    } catch (error) {
+      if (error?.name === "AbortError") return "cancelled";
+    }
+  }
+
+  if (typeof navigator === "undefined" || !navigator.clipboard?.writeText) {
+    return "failed";
+  }
+
+  try {
+    await navigator.clipboard.writeText(text);
+    return "copied";
+  } catch {
+    return "failed";
+  }
 }
 
 /** Download recipes as a ZIP of text files. Saved to the device, not to Drive. */
