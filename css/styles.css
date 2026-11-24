@@ -2479,8 +2479,12 @@ body.keyboard-open .tabbar {
 }
 
 [data-ref="ai-signin"] {
-  width: 100%;
-  min-height: 44px;
+  opacity: 0;
+  animation: ai-signin-in 0.2s ease-out 0.35s forwards;
+}
+
+@keyframes ai-signin-in {
+  to { opacity: 1; }
 }
 
 .chip-set {
