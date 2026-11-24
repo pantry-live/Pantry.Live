@@ -1826,13 +1826,6 @@ function startCooking() {
   overlay.setAttribute("aria-modal", "true");
   overlay.setAttribute("aria-label", t("cooking.cookingMode"));
   overlay.innerHTML = `
-    <button class="cooking-ingredients__toggle" type="button" data-action="toggle-ingredients"
-      aria-expanded="false" aria-controls="${listId}"
-      aria-label="${escapeHtml(t("cooking.ingredientsBarAria"))}">
-      <span class="cooking-ingredients__label" data-ref="ingredients-label"></span>
-      <span class="cooking-ingredients__chevron" aria-hidden="true">▾</span>
-    </button>
-
     <header class="cooking-overlay__header">
       <div class="cooking-overlay__progress" data-ref="progress"></div>
       <button class="icon-button" type="button" data-action="close-cooking"
@@ -1840,6 +1833,13 @@ function startCooking() {
         ${icon("close")}
       </button>
     </header>
+
+    <button class="cooking-ingredients__toggle" type="button" data-action="toggle-ingredients"
+      aria-expanded="false" aria-controls="${listId}"
+      aria-label="${escapeHtml(t("cooking.ingredientsBarAria"))}">
+      <span class="cooking-ingredients__label" data-ref="ingredients-label"></span>
+      <span class="cooking-ingredients__chevron" aria-hidden="true">▾</span>
+    </button>
 
     <section class="cooking-ingredients__drawer" id="${listId}"
       data-ref="ingredients-drawer" aria-label="${escapeHtml(t("cooking.ingredientsTitle"))}" hidden>
@@ -1897,6 +1897,7 @@ function startCooking() {
   const drawer = overlay.querySelector('[data-ref="ingredients-drawer"]');
   const fullscreenButton = overlay.querySelector('[data-action="fullscreen-ingredients"]');
   const closeFullscreenButton = overlay.querySelector('[data-action="close-fullscreen-ingredients"]');
+  const ingredientsList = overlay.querySelector('[data-ref="ingredients-list"]');
   const ingredientRows = [...overlay.querySelectorAll("[data-ingredient-index]")];
   const previousButton = overlay.querySelector('[data-action="previous"]');
   const nextButton = overlay.querySelector('[data-action="next"]');
@@ -1965,9 +1966,26 @@ function startCooking() {
     );
 
     const matched = new Set(result.matches);
+    const topRow = result.top
+      ? ingredientRows.find(
+        (row) => ingredientLines[Number(row.dataset.ingredientIndex)] === result.top
+      )
+      : null;
+    const matchedRows = [];
+    const unmatchedRows = [];
+
     for (const row of ingredientRows) {
       const line = ingredientLines[Number(row.dataset.ingredientIndex)];
-      row.classList.toggle("is-match", matched.has(line));
+      const isMatch = matched.has(line);
+      row.classList.toggle("is-match", isMatch);
+      if (!isMatch) unmatchedRows.push(row);
+      else if (row !== topRow) matchedRows.push(row);
+    }
+
+    const orderedRows = [...(topRow ? [topRow] : []), ...matchedRows, ...unmatchedRows];
+    const currentRows = [...ingredientsList.querySelectorAll("[data-ingredient-index]")];
+    if (orderedRows.some((row, index) => row !== currentRows[index])) {
+      for (const row of orderedRows) ingredientsList.append(row);
     }
   };
 
