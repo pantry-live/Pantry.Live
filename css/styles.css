@@ -2004,7 +2004,8 @@ body.keyboard-open .tabbar {
   grid-template-areas:
     "title icon"
     "desc desc";
-  align-items: center;
+  align-items: start;
+  align-content: start;
   column-gap: 8px;
   row-gap: 6px;
   padding: 14px 16px;
@@ -2071,6 +2072,31 @@ body.keyboard-open .tabbar {
 
 .account-name .icon {
   color: var(--accent-strong);
+}
+
+.account-row .settings-row__desc {
+  margin-top: 8px;
+}
+
+.account-row .settings-row__title {
+  margin-top: 10px;
+}
+
+.account-row .account-name .badge {
+  font-size: 12.5px;
+  margin-left: auto;
+}
+
+.account-row .settings-row__desc {
+  margin-top: 10px;
+}
+
+.account-row .settings-row__title {
+  margin-top: 10px;
+}
+
+.account-row .account-name {
+  font-size: 16px;
 }
 
 /* ------------------------------- Manual --------------------------------- */

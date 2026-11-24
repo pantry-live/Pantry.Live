@@ -15,16 +15,15 @@ export function accountHtml() {
 
   return `
       <section class="settings-card" aria-label="${escapeHtml(t("profile.title"))}">
-        <button class="settings-row settings-row--button${isDrive ? " settings-row--danger" : ""}"
-          type="button" data-action="${isDrive ? "sign-out" : "sign-in"}"
-          style="position: relative; padding-right: 6rem;">
-          <span class="badge" style="position: absolute; top: 12px; right: 2px;">
-            ${escapeHtml(isDrive ? t("profile.driveBadge") : t("profile.guestBadge"))}
-          </span>
+          <button class="settings-row settings-row--button account-row${isDrive ? " settings-row--danger" : ""}"
+          type="button" data-action="${isDrive ? "sign-out" : "sign-in"}">
           <span class="settings-row__text">
             <span class="account-name">
               ${icon("user")}
               <span>${escapeHtml(isDrive ? name : t("profile.guestName"))}</span>
+              <span class="badge">
+                ${escapeHtml(isDrive ? t("profile.driveBadge") : t("profile.guestBadge"))}
+              </span>
             </span>
             <span class="settings-row__desc">
               ${escapeHtml(isDrive ? t("profile.driveHint") : t("profile.guestHint"))}
