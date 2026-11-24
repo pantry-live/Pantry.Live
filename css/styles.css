@@ -2474,6 +2474,10 @@ body.keyboard-open .tabbar {
   color-scheme: light;
 }
 
+[data-ref="ai-signin"] {
+  min-height: 44px;
+}
+
 .chip-set {
   display: flex;
   flex-wrap: wrap;
