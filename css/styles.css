@@ -2469,6 +2469,11 @@ body.keyboard-open .tabbar {
   justify-content: space-between;
 }
 
+[data-ref="ai-signin"],
+[data-ref="ai-signin"] iframe {
+  color-scheme: light;
+}
+
 .chip-set {
   display: flex;
   flex-wrap: wrap;
