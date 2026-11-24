@@ -253,7 +253,7 @@ a {
   display: inline-flex;
   color: var(--accent-strong);
   position: relative;
-  top: 1px;
+  top: 0.5px;
 }
 
 .splash__brand-mark .icon {
@@ -2731,4 +2731,6 @@ body.keyboard-open .tabbar {
   line-height: 1.12;
   color: inherit;
   text-box: trim-both cap alphabetic;
+  position: relative;
+  top: -0.55em;
 }
