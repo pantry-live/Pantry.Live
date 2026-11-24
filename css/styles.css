@@ -2072,6 +2072,7 @@ body.keyboard-open .tabbar {
 
 .account-name .icon {
   color: var(--accent-strong);
+  display: block;
 }
 
 .account-row .settings-row__desc {
@@ -2097,6 +2098,9 @@ body.keyboard-open .tabbar {
 
 .account-row .account-name {
   font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 /* ------------------------------- Manual --------------------------------- */
@@ -2475,6 +2479,7 @@ body.keyboard-open .tabbar {
 }
 
 [data-ref="ai-signin"] {
+  width: 100%;
   min-height: 44px;
 }
 
